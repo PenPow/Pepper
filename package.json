@@ -1,0 +1,36 @@
+{
+  "name": "pepper",
+  "version": "1.0.0-dev",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prebuild": "npm run lint",
+    "build": "npx tsc",
+    "postbuild": "node dist/src",
+    "lint": "eslint src --ext ts",
+    "run:dev": "node dist"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "common-tags": "^1.8.0",
+    "dayjs": "^1.10.6",
+    "discord.js": "^13.1.0",
+    "dotenv": "^10.0.0",
+    "enmap": "^5.8.7",
+    "ioredis": "^4.27.9",
+    "lodash": "^4.17.21",
+    "node-fetch": "^3.0.0",
+    "tslog": "^3.2.1",
+    "uuid": "^8.3.2"
+  },
+  "devDependencies": {
+    "@types/common-tags": "^1.8.1",
+    "@types/node": "^16.7.10",
+    "eslint": "^7.32.0",
+    "jest": "^27.1.0",
+    "typescript": "^4.4.2"
+  }
+}
