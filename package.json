@@ -6,8 +6,8 @@
   "scripts": {
     "prebuild": "npm run lint",
     "build": "npx tsc",
-    "build:docker": "npx tsc",
-    "run:docker": "node dist/src",
+    "docker-build": "npx tsc",
+    "serve:docker": "node dist/src",
     "postbuild": "node dist/src",
     "lint": "eslint src --ext ts",
     "run:dev": "node dist/src"
