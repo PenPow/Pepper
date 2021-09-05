@@ -1,7 +1,7 @@
 import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
-import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, Guild, GuildChannel, GuildMember, Message, Permissions, PermissionString, Snowflake, TextChannel } from "discord.js";
+import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
 
 class Command extends Base {
@@ -43,7 +43,7 @@ class Command extends Base {
     }
 
     public async checkPermissions(interaction: CommandInteraction): Promise<boolean> {
-        if(!(interaction.channel as GuildChannel).permissionsFor(interaction.guild!!.me!!).has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS])) return false;
+        if(!(interaction.channel as GuildChannel).permissionsFor(interaction.guild.me).has([Permissions.FLAGS.SEND_MESSAGES, Permissions.FLAGS.EMBED_LINKS])) return false;
 
         const clientPermission = this.checkClientPermissions(interaction);
         const userPermission = await this.checkUserPermissions(interaction);
@@ -52,12 +52,13 @@ class Command extends Base {
     }
 
     private checkClientPermissions(interaction: CommandInteraction): boolean {
-        // @ts-expect-error
-        const missingPermissions = (interaction.channel as GuildChannel).permissionsFor(interaction.guild!!.me!!).missing(this.clientPermissions).map((p: any) => permissions[p as any]) as Array<PermissionString>;
+        // @ts-expect-error Globals are Not Recommended, but needed in this case
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const missingPermissions = (interaction.channel as GuildChannel).permissionsFor(interaction.guild.me).missing(this.clientPermissions).map((p: any) => permissions[p as any]) as Array<PermissionString>;
 
         if(missingPermissions.length !== 0) {
             const embed = new SignalEmbed(interaction)
-                .setAuthor(`${this.client.user!!.tag}`, (interaction.client as Client).user!!.displayAvatarURL({ dynamic: true }))
+                .setAuthor(`${this.client.user.tag}`, (interaction.client as Client).user.displayAvatarURL({ dynamic: true }))
                 .setTitle('Missig Bot Permissions')
                 .setDescription(`\`\`\`diff\n${missingPermissions.map(p => `- ${p}`).join('\n')}\`\`\``);
 
@@ -70,12 +71,12 @@ class Command extends Base {
     }
 
     private async checkUserPermissions(interaction: CommandInteraction): Promise<boolean> {
-        const member = await interaction.guild!!.members.fetch((interaction.member as GuildMember).id);
+        const member = await interaction.guild.members.fetch((interaction.member as GuildMember).id);
 
         if(member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return true;
         if(this.userPermissions !== null) {
-            // @ts-expect-error
-            const missingPermissions = (interaction.channel as GuildChannel).permissionsFor(interaction.user!!)!!.missing(this.userPermissions).map(p => permissions[p]);
+            // @ts-expect-error Globals are Not Recommended, but needed in this case
+            const missingPermissions = (interaction.channel as GuildChannel).permissionsFor(interaction.user).missing(this.userPermissions).map(p => permissions[p]);
 
             if(missingPermissions.length !== 0) {
 				const embed = new SignalEmbed(interaction)
@@ -134,7 +135,7 @@ class Command extends Base {
             if(!Array.isArray(options.clientPermissions)) throw new TypeError('Client Permissions is not an array of strings');
 
             for(const perm of options.clientPermissions) {
-                //@ts-ignore
+                //@ts-expect-error  Globals are Not Recommended, but needed in this case
                 if(!permissions[perm]) throw new RangeError(`Invalid command clientPermission: ${perm}`);
             }
         }
@@ -143,7 +144,7 @@ class Command extends Base {
             if(!Array.isArray(options.userPermissions)) throw new TypeError('User Permissions is not an array of strings');
 
             for(const perm of options.userPermissions) {
-                //@ts-ignore
+                //@ts-expect-error Globals are Not Recommended, but needed in this case
                 if(!permissions[perm]) throw new RangeError(`Invalid command userPermission: ${perm}`);
             }
         }

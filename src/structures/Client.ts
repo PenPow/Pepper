@@ -3,6 +3,9 @@ import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
 import { CommandTypes } from '../types/ClientTypes';
 import Command from "./Command";
 import * as MiscUtils from '../utils/MiscUtils';
+import HTTPManager from "../managers/HTTPManager";
+import CacheManager from "../managers/CacheManager";
+import ActionManager from "../managers/ActionManager";
 
 export default class Client extends DiscordClient {
     public readonly logger: Logger;
@@ -35,7 +38,10 @@ export default class Client extends DiscordClient {
         this.logger.info('Initalizing...');
         
         try {
-            this.actionManager.init();
+            this.actionManager.initCommands(this);
+            this.actionManager.initEvents(this);
+            this.cache = this.actionManager.initCache();
+            this.http = this.actionManager.initExpress(this);
 
             await this.login(process.env.DISCORD_TOKEN)
         }

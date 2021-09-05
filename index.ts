@@ -26,5 +26,5 @@
  */
 process.title = 'Pepper';
 
-//@ts-expect-error
+//@ts-expect-error Globals are Not Recommended, but needed in this case
 global.__basedir = __dirname;

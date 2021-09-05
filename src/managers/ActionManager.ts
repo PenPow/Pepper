@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 import { join, resolve } from "path";
 import { readdir, readdirSync } from "node:fs";
 import CacheManager from './CacheManager';
@@ -6,12 +7,12 @@ import Client from "../structures/Client";
 
 class ActionManager {
     initCommands(client: Client): void {
-        //@ts-expect-error
+        //@ts-expect-error Globals are Not Recommended, but needed in this case
         readdirSync(join(global.__basedir, 'src/commands')).filter(f => !f.endsWith('.js')).forEach(dir => {
-            //@ts-expect-error
+            //@ts-expect-error Globals are Not Recommended, but needed in this case
 			const commands = readdirSync(resolve(join(join(global.__basedir, 'src/commands'), dir))).filter(f => f.endsWith('js'))
 			commands.forEach(f => {
-                //@ts-expect-error
+                //@ts-expect-error Globals are Not Recommended, but needed in this case
 				const Command = require(resolve(join(join(global.__basedir, 'src/commands'), dir, f)))
 				const command = new Command(client)
 				if(command.name && !command.disabled) {
@@ -22,13 +23,13 @@ class ActionManager {
     }
 
     initEvents(client: Client): void {
-        //@ts-expect-error
+        //@ts-expect-error Globals are Not Recommended, but needed in this case
 		readdir(join(global.__basedir, 'src/events'), (err, files) => {
 			if (err) client.logger.error(err);
 
 			files.forEach(evt => {
 				const Event = require(join(
-                    //@ts-expect-error
+                    //@ts-expect-error Globals are Not Recommended, but needed in this case
 					global.__basedir,
 					'src/events/',
 					evt,
