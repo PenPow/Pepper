@@ -10,7 +10,7 @@ class AirMiles extends Command {
 			name: 'airmiles',
 			usage: 'airmiles',
 			description: 'Shows you the amount of airmiles you have earnt from the flights you have participated in',
-			type: client.types.FLIGHT,
+			type: client.types.FLIGHTS,
 			examples: ['airmiles'],
 		});
 	}
@@ -23,11 +23,7 @@ class AirMiles extends Command {
         const embed = new Embed(interaction)
             .setTitle(`<:Airplane:876506097308033025>  AirMiles for ${response.robloxUsername}`);
 
-        this.client.db.ensure(response.robloxId.toString(), 0);
-
-        const points = this.client.db.get(response.robloxId.toString());
-
-        embed.setDescription(`You have ${points} AirMiles`);
+        embed.setDescription(`You have ${0} AirMiles`);
 
         interaction.editReply({ embeds: [embed] });
     }
