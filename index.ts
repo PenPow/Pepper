@@ -28,3 +28,32 @@ process.title = 'Pepper';
 
 //@ts-expect-error Globals are Not Recommended, but needed in this case
 global.__basedir = __dirname;
+
+import Client from './src/structures/Client';
+import { Intents } from 'discord.js';
+import dotenv from 'dotenv';
+dotenv.config();
+
+const intents = new Intents();
+intents.add(
+  Intents.FLAGS.GUILDS,
+  Intents.FLAGS.GUILD_MEMBERS,
+);
+
+const client = new Client({
+	intents: intents,
+	allowedMentions: { parse: ['users', 'everyone', 'roles'], repliedUser: false },
+	failIfNotExists: true,
+	presence: {
+		status: 'online',
+		activities: [{ name: 'to @Signal', type: 'LISTENING' }],
+	},
+});
+
+async function init() {
+	await client.init();
+}
+
+init();
+
+process.on('unhandledRejection', err => client.logger.error(err));

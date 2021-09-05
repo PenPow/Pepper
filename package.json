@@ -1,7 +1,7 @@
 {
   "name": "pepper",
   "version": "1.0.0-dev",
-  "description": "",
+  "description": "Pepper is an open-source solution to server management. Built from scratch with code quality in mind, our goal is to cover as many functions as possible, to ensure that your server is at level 100.",
   "main": "index.js",
   "scripts": {
     "build": "npx tsc",
@@ -15,6 +15,7 @@
     "@discordjs/rest": "^0.1.0-canary.0",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
+    "axios": "^0.21.3",
     "common-tags": "^1.8.0",
     "cors": "^2.8.5",
     "dayjs": "^1.10.6",

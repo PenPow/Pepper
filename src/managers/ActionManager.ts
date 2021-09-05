@@ -8,12 +8,12 @@ import Client from "../structures/Client";
 class ActionManager {
     initCommands(client: Client): void {
         //@ts-expect-error Globals are Not Recommended, but needed in this case
-        readdirSync(join(global.__basedir, 'src/commands')).filter(f => !f.endsWith('.js')).forEach(dir => {
+        readdirSync(join(global.__basedir, 'src/interactions')).filter(f => !f.endsWith('.js')).forEach(dir => {
             //@ts-expect-error Globals are Not Recommended, but needed in this case
-			const commands = readdirSync(resolve(join(join(global.__basedir, 'src/commands'), dir))).filter(f => f.endsWith('js'))
+			const commands = readdirSync(resolve(join(join(global.__basedir, 'src/interactions'), dir))).filter(f => f.endsWith('js'))
 			commands.forEach(f => {
                 //@ts-expect-error Globals are Not Recommended, but needed in this case
-				const Command = require(resolve(join(join(global.__basedir, 'src/commands'), dir, f)))
+				const Command = require(resolve(join(join(global.__basedir, 'src/interactions'), dir, f)))
 				const command = new Command(client)
 				if(command.name && !command.disabled) {
 					client.commands.set(command.name, command);
