@@ -21,8 +21,9 @@ class CacheManager extends Map {
 		return super.clear();
 	}
 
-	// eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-	find(fn: any, thisArg = undefined): unknown | undefined {
+
+	// eslint-disable-next-line @typescript-eslint/ban-types
+	find(fn: Function, thisArg: any = undefined): unknown | undefined {
 		if (typeof thisArg !== 'undefined') fn = fn.bind(thisArg);
 		for (const [key, val] of this) {
 			if (fn(val, key, this)) return val;
