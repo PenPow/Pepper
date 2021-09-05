@@ -4,13 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "prebuild": "npm run lint",
     "build": "npx tsc",
-    "build:docker": "npx tsc",
-    "run:docker": "node dist/src",
-    "postbuild": "node dist/src",
     "lint": "eslint src --ext ts",
-    "run:dev": "node dist/src"
+    "start": "node dist/src"
   },
   "keywords": [],
   "author": "Joshua Clements",
