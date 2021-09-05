@@ -17,7 +17,7 @@ jobs:
         run: npm ci
 
       - name: Build TypeScript
-        run: npm run build:docker
+        run: npm run build
 
       - name: Run ESLint
         run: npm run lint
