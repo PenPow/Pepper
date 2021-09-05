@@ -18,10 +18,12 @@
   "dependencies": {
     "@discordjs/rest": "^0.1.0-canary.0",
     "common-tags": "^1.8.0",
+    "cors": "^2.8.5",
     "dayjs": "^1.10.6",
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "enmap": "^5.8.7",
+    "express": "^4.17.1",
     "ioredis": "^4.27.9",
     "lodash": "^4.17.21",
     "node-fetch": "^3.0.0",
@@ -30,6 +32,8 @@
   },
   "devDependencies": {
     "@types/common-tags": "^1.8.1",
+    "@types/cors": "^2.8.12",
+    "@types/express": "^4.17.13",
     "@types/node": "^16.7.10",
     "eslint": "^7.32.0",
     "jest": "^27.1.0",
