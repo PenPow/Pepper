@@ -17,6 +17,8 @@
   "license": "ISC",
   "dependencies": {
     "@discordjs/rest": "^0.1.0-canary.0",
+    "@typescript-eslint/eslint-plugin": "^4.30.0",
+    "@typescript-eslint/parser": "^4.30.0",
     "common-tags": "^1.8.0",
     "cors": "^2.8.5",
     "dayjs": "^1.10.6",
