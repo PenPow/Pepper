@@ -1,5 +1,5 @@
 name: Typescript
-on: [push, pull_request]
+on: push
 jobs:
   tsc:
     name: Typescript Compiler
