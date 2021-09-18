@@ -38,6 +38,7 @@ const intents = new Intents();
 intents.add(
   Intents.FLAGS.GUILDS,
   Intents.FLAGS.GUILD_MEMBERS,
+  Intents.FLAGS.GUILD_MESSAGES,
 );
 
 const client = new Client({
