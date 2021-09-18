@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+
 export function capitalize(string: string): string {
 	if(typeof string !== 'string') return '';
 	return string.charAt(0).toUpperCase() + string.slice(1);
@@ -78,4 +80,34 @@ export function replaceKeywords(message: string): string {
 
 export function sleep(ms: number): Promise<unknown> {
 	return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+// eslint-disable-next-line no-useless-escape
+export const URLRegex = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
+
+let isDockerCached: boolean | undefined;
+
+function hasDockerEnv() {
+	try {
+		fs.statSync('/.dockerenv');
+		return true;
+	} catch {
+		return false;
+	}
+}
+
+function hasDockerCGroup() {
+	try {
+		return fs.readFileSync('/proc/self/cgroup', 'utf8').includes('docker');
+	} catch {
+		return false;
+	}
+}
+
+export function isDocker(): boolean {
+	if (isDockerCached === undefined) {
+		isDockerCached = hasDockerEnv() || hasDockerCGroup();
+	}
+
+	return isDockerCached;
 }
