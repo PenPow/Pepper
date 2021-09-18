@@ -7,7 +7,7 @@ class Ready extends Event {
 	}
 
 	async run(): Promise<void> {
-		this.client.logger.info('Bot Online');
+		this.client.logger.info('Online');
 	}
 }
 
