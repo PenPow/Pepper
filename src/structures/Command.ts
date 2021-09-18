@@ -1,6 +1,7 @@
 import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
+import { CommandTypes } from '../types/ClientTypes';
 import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
 
@@ -8,26 +9,25 @@ class Command extends Base {
     public name: string;
     public usage: string;
     public description: string;
-    public type: 'info' | 'flight' | 'mod' | 'misc';
+    public type: CommandTypes;
     public clientPermissions: Array<BitFieldResolvable<PermissionString, bigint>>;
     public userPermissions: Array<BitFieldResolvable<PermissionString, bigint>> | null;
     public examples: Array<string>;
     public guildOnly: boolean;
     public disabled: boolean;
 
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    constructor(client: Client, options: Record<string, any>) {
+    constructor(client: Client, options: Record<string, unknown>) {
         super(client);
 
         this.validateOptions(client, options);
-        this.name = options.name;
-        this.usage = options.usage || options.name;
-        this.description = options.description || '';
-        this.type = options.type || client.types.MISC;
-        this.clientPermissions = options.clientPermissions || ['SEND_MESSAGES', 'EMBED_LINKS'];
-        this.userPermissions = options.userPermissions || null;
-        this.examples = options.examples || null;
-        this.disabled = Boolean(options.disabled || false);
+        this.name = options.name as string;
+        this.usage = options.usage as string || options.name as string;
+        this.description = options.description as string || '';
+        this.type = options.type as CommandTypes || client.types.MISC;
+        this.clientPermissions = options.clientPermissions as Array<BitFieldResolvable<PermissionString, bigint>> || ['SEND_MESSAGES', 'EMBED_LINKS'];
+        this.userPermissions = options.userPermissions as Array<BitFieldResolvable<PermissionString, bigint>> || null;
+        this.examples = options.examples as string[] || null;
+        this.disabled = !!(options.disabled || false);
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -92,28 +92,6 @@ class Command extends Base {
         return true;
     }
 
-    public sendErrorMessage(interaction: CommandInteraction, errorType: 'Invalid Argument' | 'Command Failure' | 'Invalid Usage', reason: string, errorMessage: string | null = null, fatal = false): void {
-        const prefix = '/';
-
-        const embed = new SignalEmbed(interaction)
-            .setDescription(`\`\`\`diff\n- ${errorType}\n+ ${reason}\`\`\``);
-        
-        if(fatal) embed.setTitle(`Fatal Error`).addField('Fatal Error', 'This is an error with the bot, please report it to the development team');
-        else {
-            embed.setTitle(`Error`)
-				.addField('Usage', `\`${prefix}${this.usage}\``);
-
-			if(this.examples) embed.addField('Examples', this.examples.map(e => `\`${prefix}${e}\``).join('\n'));
-        }
-
-        if(errorMessage) embed.addField('Error Message', `\`\`\`${errorMessage}\`\`\``);
-
-		if(interaction.deferred || interaction.replied) {interaction.followUp({ ephemeral: true, embeds: [embed] });}
-		else { interaction.reply({ embeds: [embed], ephemeral: true }); }
-
-		return;
-    }
-
     protected validateOptions(client: Client, options: Record<string, unknown>): void {
         if(!client) throw new Error('No client was found');
 
@@ -129,7 +107,7 @@ class Command extends Base {
         if(options.description && typeof options.description !== 'string') throw new TypeError('Command Description is not a string');
 
         if(options.type && typeof options.type !== 'string') throw new TypeError('Command type is not a string');
-        if(options.type && !Object.values(client.types).includes(options.type as 'mod' | 'info' | 'flight' | 'misc')) throw new Error('Command Type does not exist');
+        if(options.type && !Object.values(client.types).includes(options.type as CommandTypes)) throw new Error('Command Type does not exist');
 
         if(options.clientPermissions) {
             if(!Array.isArray(options.clientPermissions)) throw new TypeError('Client Permissions is not an array of strings');
