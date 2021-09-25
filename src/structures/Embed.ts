@@ -1,7 +1,6 @@
-
 import { MessageEmbed, CommandInteraction, GuildMember } from 'discord.js';
 
-class SignalEmbed extends MessageEmbed {
+class Embed extends MessageEmbed {
 	constructor(interaction: CommandInteraction, data = {}) {
 		super(data);
 
@@ -11,4 +10,4 @@ class SignalEmbed extends MessageEmbed {
 	}
 }
 
-export default SignalEmbed;
+export default Embed;
