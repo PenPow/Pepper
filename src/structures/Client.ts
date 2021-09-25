@@ -5,10 +5,7 @@ import Command from "./Command";
 import * as utils from '../utils/export';
 import CacheManager from "../managers/CacheManager";
 import ActionManager from "../managers/ActionManager";
-import { createClient } from "redis";
-import type { RedisClientType } from "redis/dist/lib/client";
-import type { RedisModules } from "redis/dist/lib/commands";
-import type { RedisLuaScripts } from "redis/dist/lib/lua-script";
+import Redis from "ioredis";
 
 export default class Client extends DiscordClient {
     public readonly logger: Logger;
@@ -16,15 +13,13 @@ export default class Client extends DiscordClient {
     public readonly commands: Collection<string, Command>;
     public readonly utils: typeof import('../utils/export');
     private readonly actionManager: ActionManager;
-    public readonly db: RedisClientType<RedisModules, RedisLuaScripts>
+    public readonly db: Redis.Redis;
     public readonly cache: CacheManager;
 
     constructor(options: ClientOptions) {
         super(options);
 
         this.logger = new Logger({ name: "signal" });
-
-        this.db = createClient({ socket: { url: process.env.DATABASE_URL }});
 
         this.types = CommandTypes;
 
@@ -33,6 +28,8 @@ export default class Client extends DiscordClient {
         this.utils = utils;
 
         this.actionManager = new ActionManager();
+
+        this.db = this.actionManager.initRedis()
 
         this.cache = this.actionManager.initCache();
     }
