@@ -2,8 +2,8 @@
 import { join, resolve } from "path";
 import { readdir, readdirSync } from "node:fs";
 import CacheManager from './CacheManager';
-import HTTPManager from "./HTTPManager";
-import Client from "../structures/Client";
+import type Client from '../structures/Client';
+import Redis from "ioredis";
 
 class ActionManager {
     initCommands(client: Client): void {
@@ -24,14 +24,14 @@ class ActionManager {
 
     initEvents(client: Client): void {
         //@ts-expect-error Globals are Not Recommended, but needed in this case
-		readdir(join(global.__basedir, 'src/events'), (err, files) => {
+		readdir(join(global.__basedir, 'src/listeners'), (err, files) => {
 			if (err) client.logger.error(err);
 
 			files.forEach(evt => {
 				const Event = require(join(
                     //@ts-expect-error Globals are Not Recommended, but needed in this case
 					global.__basedir,
-					'src/events/',
+					'src/listeners/',
 					evt,
 				));
 
@@ -50,11 +50,9 @@ class ActionManager {
 		return new CacheManager();
 	}
 
-    initExpress(client: Client): HTTPManager {
-		const manager = new HTTPManager(client);
-		manager.init();
-        return manager;
-    }
+	initRedis(): Redis.Redis  {
+		return new Redis(process.env.DATABASE_URL)
+	}
 }
 
 export default ActionManager;

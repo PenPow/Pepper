@@ -38,6 +38,7 @@ const intents = new Intents();
 intents.add(
   Intents.FLAGS.GUILDS,
   Intents.FLAGS.GUILD_MEMBERS,
+  Intents.FLAGS.GUILD_MESSAGES,
 );
 
 const client = new Client({
@@ -46,7 +47,7 @@ const client = new Client({
 	failIfNotExists: true,
 	presence: {
 		status: 'online',
-		activities: [{ name: 'to @Signal', type: 'LISTENING' }],
+		activities: [{ name: 'to / commands', type: 'LISTENING' }],
 	},
 });
 

@@ -2,46 +2,50 @@ import { Logger } from "tslog";
 import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
 import { CommandTypes } from '../types/ClientTypes';
 import Command from "./Command";
-import * as MiscUtils from '../utils/MiscUtils';
-import HTTPManager from "../managers/HTTPManager";
+import * as utils from '../utils/export';
 import CacheManager from "../managers/CacheManager";
 import ActionManager from "../managers/ActionManager";
+import Redis from "ioredis";
 
 export default class Client extends DiscordClient {
     public readonly logger: Logger;
-    public readonly types: CommandTypes;
+    public readonly types: typeof CommandTypes;
     public readonly commands: Collection<string, Command>;
-    public readonly utils: unknown;
+    public readonly utils: typeof import('../utils/export');
     private readonly actionManager: ActionManager;
-    public cache: CacheManager;
-    public http: HTTPManager;
+    public readonly db: Redis.Redis;
+    public readonly cache: CacheManager;
 
     constructor(options: ClientOptions) {
         super(options);
 
         this.logger = new Logger({ name: "signal" });
-        this.types = {
-            ADMIN: 'admin',
-            FLIGHTS: 'flights',
-            INFO: 'info',
-            FUN: 'fun',
-            MISC: 'misc',
-            MOD: 'mod',
-            TAGS: 'tags'
-        }
+
+        this.types = CommandTypes;
+
         this.commands = new Collection();
-        this.utils = MiscUtils;
+
+        this.utils = utils;
+
         this.actionManager = new ActionManager();
+
+        this.db = this.actionManager.initRedis()
+
+        this.cache = this.actionManager.initCache();
     }
 
     async init(): Promise<void> {
+        if(this.utils.isDocker()) {
+            this.logger.warn('Running on Docker - Waiting 60 seconds to allow Redis to start');
+
+            await this.utils.sleep(1000 * 60);
+        }
+
         this.logger.info('Initalizing...');
         
         try {
-            this.actionManager.initCommands(this);
+            // this.actionManager.initCommands(this);
             this.actionManager.initEvents(this);
-            this.cache = this.actionManager.initCache();
-            this.http = this.actionManager.initExpress(this);
 
             await this.login(process.env.DISCORD_TOKEN)
         }

@@ -13,6 +13,6 @@ RUN npm install
 
 COPY . .
 
-RUN npm run docker-build
+RUN npm run build
 
-CMD [ "npm", "run", "serve:docker" ]
+CMD [ "npm", "run", "start" ]
