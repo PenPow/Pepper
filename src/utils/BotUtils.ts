@@ -4,7 +4,8 @@ import Client from "../structures/Client";
 import { GuildSettings } from '../types/ClientTypes';
 
 export async function guildSettingsManager(guild: Guild): Promise<GuildSettings> {
-    return await JSON.parse(await (guild.client as Client).db.get(`${guild.id}-settings`));
+    const object = await JSON.parse(await (guild.client as Client).db.get(`${guild.id}-settings`))
+    return object === null ? { logChannel: undefined } : object;
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
