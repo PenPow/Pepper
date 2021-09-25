@@ -47,7 +47,7 @@ const client = new Client({
 	failIfNotExists: true,
 	presence: {
 		status: 'online',
-		activities: [{ name: 'to @Signal', type: 'LISTENING' }],
+		activities: [{ name: 'to / commands', type: 'LISTENING' }],
 	},
 });
 
