@@ -1,12 +1,19 @@
-import { Guild, GuildMember, User, Snowflake } from 'discord.js';
+import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions } from 'discord.js';
 
 export enum CommandTypes {
-    ADMIN = 'admin',
-    INFO = 'info',
-    FUN = 'fun',
-    MISC = 'misc',
-    MOD = 'mod',
-    TAGS = 'tags'
+    ADMIN,
+    INFO,
+    FUN,
+    MISC,
+    MOD,
+    TAGS
+}
+
+export enum ErrorTypes {
+    INVALID_ARGUMENT = 'INVALID_ARGUMENT',
+    COMMAND_FAILURE = 'COMMAND_FAILURE',
+    EXTERNAL_ERROR = 'EXTERNAL_ERROR',
+    DATABASE_ERROR = 'DATABASE_ERROR'
 }
 
 export type Callback = <T>(t: T) => void
@@ -56,4 +63,13 @@ export interface AssortedOptions {
 
 export interface GuildSettings {
     logChannel: Snowflake | undefined
+}
+
+export interface ErrorSettings {
+    errorType: ErrorTypes,
+    errorMessage?: string,
+}
+
+export interface ResponseOptions extends InteractionReplyOptions {
+    followUp?: boolean,
 }
