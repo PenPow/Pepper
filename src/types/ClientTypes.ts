@@ -1,6 +1,6 @@
-import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions } from 'discord.js';
+import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString } from 'discord.js';
 
-export enum CommandTypes {
+export enum CommandType {
     ADMIN,
     INFO,
     FUN,
@@ -9,7 +9,7 @@ export enum CommandTypes {
     TAGS
 }
 
-export enum ErrorTypes {
+export enum ErrorType {
     INVALID_ARGUMENT = 'INVALID_ARGUMENT',
     COMMAND_FAILURE = 'COMMAND_FAILURE',
     EXTERNAL_ERROR = 'EXTERNAL_ERROR',
@@ -66,10 +66,20 @@ export interface GuildSettings {
 }
 
 export interface ErrorSettings {
-    errorType: ErrorTypes,
+    errorType: ErrorType,
     errorMessage?: string,
 }
 
 export interface ResponseOptions extends InteractionReplyOptions {
     followUp?: boolean,
+}
+
+export interface CommandConstructor {
+    name: string,
+    description: string
+    type: CommandType,
+    clientPermissions?: Array<BitFieldResolvable<PermissionString, bigint>>,
+    userPermissions?: Array<BitFieldResolvable<PermissionString, bigint>>
+    extendedDescription?: string,
+    guildOnly?: boolean
 }

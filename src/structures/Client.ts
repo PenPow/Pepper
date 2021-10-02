@@ -1,6 +1,6 @@
 import { Logger } from "tslog";
 import { Client as DiscordClient, ClientOptions, Collection } from "discord.js";
-import { CommandTypes } from '../types/ClientTypes';
+import { CommandType } from '../types/ClientTypes';
 import Command from "./Command";
 import * as utils from '../utils/export';
 import CacheManager from "../managers/CacheManager";
@@ -9,7 +9,7 @@ import Redis from "ioredis";
 
 export default class Client extends DiscordClient {
     public readonly logger: Logger;
-    public readonly types: typeof CommandTypes;
+    public readonly types: typeof CommandType;
     public readonly commands: Collection<string, Command>;
     public readonly utils: typeof import('../utils/export');
     private readonly actionManager: ActionManager;
@@ -21,7 +21,7 @@ export default class Client extends DiscordClient {
 
         this.logger = new Logger({ name: "signal" });
 
-        this.types = CommandTypes;
+        this.types = CommandType;
 
         this.commands = new Collection();
 

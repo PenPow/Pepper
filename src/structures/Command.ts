@@ -1,38 +1,54 @@
 import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
-import { CommandTypes } from '../types/ClientTypes';
-import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Permissions, PermissionString } from "discord.js";
+import { CommandType, ResponseOptions, ErrorSettings, ErrorType, PunishmentColor, CommandConstructor } from '../types/ClientTypes';
+import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Message, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
+import Embed from "./Embed";
 
 class Command extends Base {
     public name: string;
-    public usage: string;
     public description: string;
-    public type: CommandTypes;
+    public extendedDescription: string;
+    public type: CommandType;
+    public guildOnly: boolean;
     public clientPermissions: Array<BitFieldResolvable<PermissionString, bigint>>;
     public userPermissions: Array<BitFieldResolvable<PermissionString, bigint>> | null;
-    public examples: Array<string>;
-    public guildOnly: boolean;
-    public disabled: boolean;
 
-    constructor(client: Client, options: Record<string, unknown>) {
+    constructor(client: Client, options: CommandConstructor) {
         super(client);
 
-        this.validateOptions(client, options);
-        this.name = options.name as string;
-        this.usage = options.usage as string || options.name as string;
-        this.description = options.description as string || '';
-        this.type = options.type as CommandTypes || client.types.MISC;
-        this.clientPermissions = options.clientPermissions as Array<BitFieldResolvable<PermissionString, bigint>> || ['SEND_MESSAGES', 'EMBED_LINKS'];
-        this.userPermissions = options.userPermissions as Array<BitFieldResolvable<PermissionString, bigint>> || null;
-        this.examples = options.examples as string[] || null;
-        this.disabled = !!(options.disabled || false);
+        this.name = options.name;
+        this.description = options.description;
+        this.type = options.type || client.types.MISC;
+        this.guildOnly = options.guildOnly || false;
+        this.extendedDescription = options.extendedDescription || options.description;
+        this.clientPermissions = options.clientPermissions || ['SEND_MESSAGES', 'EMBED_LINKS'];
+        this.userPermissions = options.userPermissions || null;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     public run(interaction: CommandInteraction, args: Collection<string, CommandInteractionOption>): void | Promise<void> {
         throw new Error(`${this.name} has no run function`);
+    }
+
+    protected async reply(interaction: CommandInteraction, options: ResponseOptions): Promise<Message> {
+        if(!options.ephemeral) options.fetchReply = true;
+
+        if(interaction.deferred || interaction.replied) {
+            if(options.followUp) {
+                delete options.followUp;
+                return await interaction.followUp(options) as Message
+            }
+            else {
+                if(options.followUp) delete options.followUp;
+                return await interaction.editReply(options) as Message
+            }
+        }
+        else {
+            if(options.followUp) delete options.followUp;
+            return await interaction.reply(options) as unknown as Message
+        }
     }
 
     public generateSlashCommand(): Record<string, unknown> {
@@ -52,7 +68,7 @@ class Command extends Base {
     }
 
     private checkClientPermissions(interaction: CommandInteraction): boolean {
-        // @ts-expect-error Globals are Not Recommended, but needed in this case
+        // @ts-expect-error Cant be bothered working out types for the permissions
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const missingPermissions = (interaction.channel as GuildChannel).permissionsFor(interaction.guild.me).missing(this.clientPermissions).map((p: any) => permissions[p as any]) as Array<PermissionString>;
 
@@ -62,7 +78,7 @@ class Command extends Base {
                 .setTitle('Missig Bot Permissions')
                 .setDescription(`\`\`\`diff\n${missingPermissions.map(p => `- ${p}`).join('\n')}\`\`\``);
 
-            interaction.reply({ embeds: [embed], ephemeral: true });
+            this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: false });
 
             return false;
         }
@@ -70,12 +86,23 @@ class Command extends Base {
         return true;
     }
 
+    protected async sendErrorMessage(interaction: CommandInteraction, options: ErrorSettings): Promise<void> {
+        const embed = new Embed(interaction)
+            .setTitle(`:warning: An Error Occured!`)
+            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.COMMAND_FAILURE || options.errorType == ErrorType.DATABASE_ERROR || options.errorType == ErrorType.EXTERNAL_ERROR ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them a screenshot of this embed so we can look into it*`)
+            .setColor(PunishmentColor.BAN)
+            
+        if(options.errorMessage) embed.addField('Message', `\`\`\`diff\n- ${options.errorType}\n+ ${options.errorMessage}\`\`\``);
+
+        await this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: true})
+    }
+
     private async checkUserPermissions(interaction: CommandInteraction): Promise<boolean> {
         const member = await interaction.guild.members.fetch((interaction.member as GuildMember).id);
 
         if(member.permissions.has(Permissions.FLAGS.ADMINISTRATOR)) return true;
         if(this.userPermissions !== null) {
-            // @ts-expect-error Globals are Not Recommended, but needed in this case
+            // @ts-expect-error Code works, cant be bothered figuring out types for this
             const missingPermissions = (interaction.channel as GuildChannel).permissionsFor(interaction.user).missing(this.userPermissions).map(p => permissions[p]);
 
             if(missingPermissions.length !== 0) {
@@ -84,57 +111,12 @@ class Command extends Base {
 					.setTitle(`Missing User Permissions`)
 					.setDescription(`\`\`\`diff\n${missingPermissions.map(p => `- ${p}`).join('\n')}\`\`\``);
 
-				interaction.reply({ embeds: [embed], ephemeral: true });
+				this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: false });
 				return false;
 			}
         }
 
         return true;
-    }
-
-    protected validateOptions(client: Client, options: Record<string, unknown>): void {
-        if(!client) throw new Error('No client was found');
-
-        if(typeof options !== 'object') throw new TypeError('Options is not an Object');
-
-        if(typeof options.name !== 'string') throw new TypeError('Command name is not a string');
-        if(options.name !== options.name.toLowerCase()) throw new Error('Command name is not lowecase');
-
-        if(client.commands.get(options.name)) throw new ReferenceError(`Command ${options.name} already exists`);
-
-        if(options.usage && typeof options.usage !== 'string') throw new TypeError('Command Usage is not a string');
-
-        if(options.description && typeof options.description !== 'string') throw new TypeError('Command Description is not a string');
-
-        if(options.type && typeof options.type !== 'string') throw new TypeError('Command type is not a string');
-        if(options.type && !Object.values(client.types).includes(options.type as CommandTypes)) throw new Error('Command Type does not exist');
-
-        if(options.clientPermissions) {
-            if(!Array.isArray(options.clientPermissions)) throw new TypeError('Client Permissions is not an array of strings');
-
-            for(const perm of options.clientPermissions) {
-                //@ts-expect-error  Globals are Not Recommended, but needed in this case
-                if(!permissions[perm]) throw new RangeError(`Invalid command clientPermission: ${perm}`);
-            }
-        }
-
-        if(options.userPermissions) {
-            if(!Array.isArray(options.userPermissions)) throw new TypeError('User Permissions is not an array of strings');
-
-            for(const perm of options.userPermissions) {
-                //@ts-expect-error Globals are Not Recommended, but needed in this case
-                if(!permissions[perm]) throw new RangeError(`Invalid command userPermission: ${perm}`);
-            }
-        }
-
-        if(options.examples && !Array.isArray(options.examples)) throw new TypeError('Examples are not an array');
-
-        if(options.ownerOnly && typeof options.ownerOnly !== 'boolean') throw new TypeError('Command ownerOnly is not a boolean');
-
-        if (options.disabled && typeof options.disabled !== 'boolean') throw new TypeError('Command disabled is not a boolean');
-
-        if(options.errorTypes && !Array.isArray(options.errorTypes)) throw new TypeError('Error types are not an array');
-        if(options.guilds && !Array.isArray(options.guilds)) throw new TypeError('Guilds are not an array');
     }
 }
 
