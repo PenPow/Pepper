@@ -1,6 +1,6 @@
 import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions } from 'discord.js';
 
-export enum CommandType {
+export enum CommandTypes {
     ADMIN,
     INFO,
     FUN,
@@ -9,7 +9,7 @@ export enum CommandType {
     TAGS
 }
 
-export enum ErrorType {
+export enum ErrorTypes {
     INVALID_ARGUMENT = 'INVALID_ARGUMENT',
     COMMAND_FAILURE = 'COMMAND_FAILURE',
     EXTERNAL_ERROR = 'EXTERNAL_ERROR',
@@ -66,16 +66,10 @@ export interface GuildSettings {
 }
 
 export interface ErrorSettings {
-    errorType: ErrorType,
+    errorType: ErrorTypes,
     errorMessage?: string,
 }
 
 export interface ResponseOptions extends InteractionReplyOptions {
     followUp?: boolean,
-}
-
-export interface CommandConstructor {
-    name: string,
-    description: string
-    type: CommandType
 }
