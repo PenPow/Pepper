@@ -7,7 +7,7 @@ import { transpile, getParsedCommandLineOfConfigFile, sys } from "typescript";
 import { inspect } from 'util';
 import Embed from '../../structures/Embed';
 
-export default class DeployCommand extends Command {
+export default class EvalCommand extends Command {
     constructor(client: Client) {
 		super(client, {
 			name: 'execute',
