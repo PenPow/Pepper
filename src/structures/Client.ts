@@ -44,7 +44,7 @@ export default class Client extends DiscordClient {
         this.logger.info('Initalizing...');
         
         try {
-            // this.actionManager.initCommands(this);
+            await this.actionManager.initCommands(this);
             this.actionManager.initEvents(this);
 
             await this.login(process.env.DISCORD_TOKEN)
