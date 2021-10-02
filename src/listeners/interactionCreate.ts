@@ -21,8 +21,6 @@ class interactionCreate extends Event {
 
 		if(!permissions) return;
 
-		await interaction.deferReply({ ephemeral: false });
-
 		command.run(interaction, interaction.options as unknown as Collection<string, CommandInteractionOption>);
 	}
 }
