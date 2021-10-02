@@ -1,7 +1,7 @@
 import { CommandInteraction } from 'discord.js';
 import Client from "../../structures/Client";
 import Command from "../../structures/Command";
-import { ErrorTypes } from "../../types/ClientTypes";
+import { ErrorType } from "../../types/ClientTypes";
 import { REST } from '@discordjs/rest';
 import { Routes } from 'discord-api-types/v9';
 
@@ -15,7 +15,7 @@ export default class DeployCommand extends Command {
 	}
 
     async run(interaction: CommandInteraction): Promise<void> {
-        if(interaction.user.id !== '207198455301537793') return this.sendErrorMessage(interaction, { errorType: ErrorTypes.COMMAND_FAILURE, errorMessage: 'Unauthorized'})
+        if(interaction.user.id !== '207198455301537793') return this.sendErrorMessage(interaction, { errorType: ErrorType.COMMAND_FAILURE, errorMessage: 'Unauthorized'})
         else {
             const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
@@ -38,7 +38,7 @@ export default class DeployCommand extends Command {
             }
             catch (error) {
                 this.client.logger.error(error);
-                this.sendErrorMessage(interaction, { errorType: ErrorTypes.EXTERNAL_ERROR, errorMessage: error.stack})
+                this.sendErrorMessage(interaction, { errorType: ErrorType.EXTERNAL_ERROR, errorMessage: error.stack})
             }
         }
     }
