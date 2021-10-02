@@ -6,16 +6,16 @@ import type Client from '../structures/Client';
 import Redis from "ioredis";
 
 class ActionManager {
-    initCommands(client: Client): void {
+    async initCommands(client: Client): Promise<void> {
         //@ts-expect-error Globals are Not Recommended, but needed in this case
-        readdirSync(join(global.__basedir, 'src/interactions')).filter(f => !f.endsWith('.js')).forEach(dir => {
+        readdirSync(join(global.__basedir, 'src/interactions')).filter(f => !f.endsWith('.js')).forEach(async (dir) => {
             //@ts-expect-error Globals are Not Recommended, but needed in this case
-			const commands = readdirSync(resolve(join(join(global.__basedir, 'src/interactions'), dir))).filter(f => f.endsWith('js'))
-			commands.forEach(f => {
+			const commands = readdirSync(resolve(join(global.__basedir, 'src/interactions'), dir)).filter(f => f.endsWith('js'))
+			commands.forEach(async (f) => {
                 //@ts-expect-error Globals are Not Recommended, but needed in this case
-				const Command = require(resolve(join(join(global.__basedir, 'src/interactions'), dir, f)))
+				const Command = require(resolve(join(global.__basedir, 'src/interactions', dir, f))).default;
 				const command = new Command(client)
-				if(command.name && !command.disabled) {
+				if(command) {
 					client.commands.set(command.name, command);
 				}
 			});
