@@ -1,4 +1,4 @@
-import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions } from 'discord.js';
+import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString } from 'discord.js';
 
 export enum CommandType {
     ADMIN,
@@ -77,5 +77,9 @@ export interface ResponseOptions extends InteractionReplyOptions {
 export interface CommandConstructor {
     name: string,
     description: string
-    type: CommandType
+    type: CommandType,
+    clientPermissions?: Array<BitFieldResolvable<PermissionString, bigint>>,
+    userPermissions?: Array<BitFieldResolvable<PermissionString, bigint>>
+    extendedDescription?: string,
+    guildOnly?: boolean
 }

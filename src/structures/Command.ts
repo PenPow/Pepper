@@ -1,7 +1,7 @@
 import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
-import { CommandType, ResponseOptions, ErrorSettings, ErrorType, PunishmentColor } from '../types/ClientTypes';
+import { CommandType, ResponseOptions, ErrorSettings, ErrorType, PunishmentColor, CommandConstructor } from '../types/ClientTypes';
 import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Message, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
 import Embed from "./Embed";
@@ -15,16 +15,16 @@ class Command extends Base {
     public clientPermissions: Array<BitFieldResolvable<PermissionString, bigint>>;
     public userPermissions: Array<BitFieldResolvable<PermissionString, bigint>> | null;
 
-    constructor(client: Client, options: Record<string, unknown>) { // TODO! IMPLEMENT TYPE FOR THESE OPTIONS
+    constructor(client: Client, options: CommandConstructor) {
         super(client);
 
-        this.name = options.name as string;
-        this.description = options.description as string;
-        this.type = options.type as CommandType || client.types.MISC;
-        this.guildOnly = options.guildOnly as boolean || false;
-        this.extendedDescription = options.extendedDescription as string || options.description as string;
-        this.clientPermissions = options.clientPermissions as Array<BitFieldResolvable<PermissionString, bigint>> || ['SEND_MESSAGES', 'EMBED_LINKS'];
-        this.userPermissions = options.userPermissions as Array<BitFieldResolvable<PermissionString, bigint>> || null;
+        this.name = options.name;
+        this.description = options.description;
+        this.type = options.type || client.types.MISC;
+        this.guildOnly = options.guildOnly || false;
+        this.extendedDescription = options.extendedDescription || options.description;
+        this.clientPermissions = options.clientPermissions || ['SEND_MESSAGES', 'EMBED_LINKS'];
+        this.userPermissions = options.userPermissions || null;
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
