@@ -1,7 +1,7 @@
 import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
-import { CommandTypes, ResponseOptions, ErrorSettings, ErrorTypes, PunishmentColor } from '../types/ClientTypes';
+import { CommandType, ResponseOptions, ErrorSettings, ErrorType, PunishmentColor } from '../types/ClientTypes';
 import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Message, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
 import Embed from "./Embed";
@@ -10,7 +10,7 @@ class Command extends Base {
     public name: string;
     public description: string;
     public extendedDescription: string;
-    public type: CommandTypes;
+    public type: CommandType;
     public guildOnly: boolean;
     public clientPermissions: Array<BitFieldResolvable<PermissionString, bigint>>;
     public userPermissions: Array<BitFieldResolvable<PermissionString, bigint>> | null;
@@ -19,8 +19,8 @@ class Command extends Base {
         super(client);
 
         this.name = options.name as string;
-        this.description = options.description as string || '';
-        this.type = options.type as CommandTypes || client.types.MISC;
+        this.description = options.description as string;
+        this.type = options.type as CommandType || client.types.MISC;
         this.guildOnly = options.guildOnly as boolean || false;
         this.extendedDescription = options.extendedDescription as string || options.description as string;
         this.clientPermissions = options.clientPermissions as Array<BitFieldResolvable<PermissionString, bigint>> || ['SEND_MESSAGES', 'EMBED_LINKS'];
@@ -89,7 +89,7 @@ class Command extends Base {
     protected async sendErrorMessage(interaction: CommandInteraction, options: ErrorSettings): Promise<void> {
         const embed = new Embed(interaction)
             .setTitle(`:warning: An Error Occured!`)
-            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorTypes.COMMAND_FAILURE || options.errorType == ErrorTypes.DATABASE_ERROR || options.errorType == ErrorTypes.EXTERNAL_ERROR ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them a screenshot of this embed so we can look into it*`)
+            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.COMMAND_FAILURE || options.errorType == ErrorType.DATABASE_ERROR || options.errorType == ErrorType.EXTERNAL_ERROR ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them a screenshot of this embed so we can look into it*`)
             .setColor(PunishmentColor.BAN)
             
         if(options.errorMessage) embed.addField('Message', `\`\`\`diff\n- ${options.errorType}\n+ ${options.errorMessage}\`\`\``);
