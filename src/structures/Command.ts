@@ -51,7 +51,7 @@ class Command extends Base {
         }
     }
 
-    public generateSlashCommand(): Record<string, unknown> {
+    public async generateSlashCommand(): Promise<Record<string, unknown>> {
         return {
             name: this.name,
             description: this.description,

@@ -17,13 +17,19 @@ export default class DeployCommand extends Command {
     async run(interaction: CommandInteraction): Promise<void> {
         if(interaction.user.id !== '207198455301537793') return this.sendErrorMessage(interaction, { errorType: ErrorType.COMMAND_FAILURE, errorMessage: 'Unauthorized'})
         else {
+            await interaction.deferReply({ ephemeral: true })
+
             const rest = new REST({ version: '9' }).setToken(process.env.DISCORD_TOKEN);
 
             const array: unknown[] = [];
 
-            this.client.commands.forEach((command) => {
-                array.push(command.generateSlashCommand());
+            this.client.commands.forEach(async (command) => {
+                const json = await command.generateSlashCommand()
+                array.push(json);
             })
+
+            await this.client.utils.sleep(1000 * 3)
+
 
             try {
                 this.client.logger.info('Started refreshing application (/) commands');
@@ -58,7 +64,7 @@ export default class DeployCommand extends Command {
         }
     }
 
-    generateSlashCommand(): Record<string, unknown> {
+    async generateSlashCommand(): Promise<Record<string, unknown>> {
         return {
             name: this.name,
             description: this.description,
