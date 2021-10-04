@@ -18,7 +18,7 @@
 
 ## About
 
-Pepper is an open source solution to server management. Built from scratch with code quality in mind, our coal is to cover as many functions as possible, to ensure that your server is at level 100.
+Pepper is an open-source solution to server management. Built from scratch with code quality in mind, our goal is to cover as many functions as possible, to ensure that your server is at level 100.
 
 ## License
 
@@ -33,7 +33,7 @@ If you have any questions, don't hesitate to join our support server and ask our
 ### Ideas and discussion
 If you ever have an idea for a new command, please create a discussion describing it. The project maintainers will take a look at it, and maybe even add it into Pepper!
 
-In addition to this, you can provide your own insights and thoughts about suggested ideas by leaving a comment on the discussion page! We always love to be given critiscism and review so we can ensure Pepper is up to standards.
+In addition to this, you can provide your own insights and thoughts about suggested ideas by leaving a comment on the discussion page! We always love to be given criticism and review so we can ensure Pepper is up to standards.
 
 ### Writing code
 If you are proficient in Typescript, please feel free to help support and maintain the development team by forking the project, and implementing any changes you feel will help improve the bot, for us developers, or for the Pepper community!
