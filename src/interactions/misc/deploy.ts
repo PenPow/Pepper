@@ -28,11 +28,10 @@ export default class DeployCommand extends Command {
                 array.push(json);
             })
 
-            await this.client.utils.sleep(1000 * 3)
-
-
             try {
                 this.client.logger.info('Started refreshing application (/) commands');
+
+                await this.client.utils.sleep(1000 * 5)
 
                 const sentCommands = await rest.put(
                     Routes.applicationGuildCommands(this.client.user.id, process.env.DEVELOPER_GUILD),
