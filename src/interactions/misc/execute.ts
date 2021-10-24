@@ -31,7 +31,7 @@ export default class EvalCommand extends Command {
                 "language": interaction.options.getString('language', true),
                 "version": latestVersion,
                 "files": [{
-                    "content": interaction.options.getString('command', true).replace('--usePiston', '')
+                    "content": interaction.options.getString('command', true).replace('--usePiston', '').trim()
                 }],
                 "stdin": "",
                 "args": [] as string[],
@@ -49,8 +49,8 @@ export default class EvalCommand extends Command {
 				.setTitle('Code Evaluation')
 				.setDescription('The code was executed! Here\'s the output')
 				.addFields(
-					{ name: "Input", value: Formatters.codeBlock(interaction.options.getString('language', true), interaction.options.getString('command', true).replaceAll(/[“”]/gim, '"').replace('--usePiston', '').substring(0, 1015)) },
-					{ name: "Output", value: Formatters.codeBlock('markdown', responseJSON.run.output.substring(0, 1015)) },
+					{ name: "Input", value: Formatters.codeBlock(interaction.options.getString('language', true), interaction.options.getString('command', true).replaceAll(/[“”]/gim, '"').replace('--usePiston', '').substring(0, 1015)).trim() },
+					{ name: "Output", value: Formatters.codeBlock('markdown', responseJSON.run.output.substring(0, 1015)).trim() },
 					{ name: "Output length", value: `${responseJSON.run.output.length}`, inline: true },
 					{ name: "Time taken", value: `${(Date.now() - interaction.createdTimestamp).toLocaleString()}ms`, inline: true }
 				)
@@ -102,7 +102,7 @@ export default class EvalCommand extends Command {
                 const embed = new Embed(interaction)
                                 .setColor(PunishmentColor.BAN)
                                 .setTitle('Code Evaluation')
-                                .setDescription('An error occured while executing that code. Here\'s the error stack')
+                                .setDescription('An error occurred while executing that code. Here\'s the error stack')
                                 .addFields(
                                     { name: "Input", value: Formatters.codeBlock("ts", codeToRun.substring(0, 1015)) },
                                     { name: "Compiled code", value: Formatters.codeBlock("js", compiledCode.replaceAll(";", "").substring(0, 1015)) },
