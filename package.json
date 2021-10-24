@@ -6,7 +6,8 @@
   "scripts": {
     "build": "npx tsc",
     "lint": "eslint src --ext ts",
-    "start": "node dist"
+    "start": "node dist",
+    "ci": "npm run build && npm run start"
   },
   "keywords": [],
   "author": "Joshua Clements",
@@ -20,6 +21,7 @@
     "discord.js": "^13.1.0",
     "dotenv": "^10.0.0",
     "ioredis": "^4.27.9",
+    "is-valid-domain": "^0.1.2",
     "node-fetch": "^2.6.5",
     "tslog": "^3.2.2"
   },
