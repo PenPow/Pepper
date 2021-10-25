@@ -7,7 +7,7 @@ export async function createCase(options: Punishment): Promise<Message> {
     const { guild, action, moderator, target, assortedOptions } = options;
 
     options.caseNo = await getCaseNumber(guild, guild.client as Client);
-    options.reason = `Mod: ${moderator.user.tag} | ${options.reason !== '' ? options.reason : 'No Reason Specfied'}`;
+    options.reason = `Mod: ${moderator.user.tag} | ${options.reason !== '' ? options.reason : 'No Reason Specified'}`;
 
     await (guild.client as Client).db.set(`${guild.id}-case`, (options.caseNo + 1).toString());
 
