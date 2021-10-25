@@ -6,11 +6,12 @@ import * as utils from '../utils/export';
 import CacheManager from "../managers/CacheManager";
 import ActionManager from "../managers/ActionManager";
 import Redis from "ioredis";
+import Interaction from "./Interaction";
 
 export default class Client extends DiscordClient {
     public readonly logger: Logger;
     public readonly types: typeof CommandType;
-    public readonly commands: Collection<string, Command>;
+    public readonly commands: Collection<string, Command | Interaction>;
     public readonly utils: typeof import('../utils/export');
     private readonly actionManager: ActionManager;
     public readonly db: Redis.Redis;
@@ -41,16 +42,22 @@ export default class Client extends DiscordClient {
             await this.utils.sleep(1000 * 60);
         }
 
-        this.logger.info('Initalizing...');
+        this.logger.info('Initializing...');
         
         try {
             await this.actionManager.initCommands(this);
             this.actionManager.initEvents(this);
+            this.actionManager.initInteractions(this)
 
             await this.login(process.env.DISCORD_TOKEN)
         }
         catch(e) {
             this.logger.error(`Failed to Init: ${e.stack}`);
         }
+    }
+
+    isCommandInteraction(interaction: Command | Interaction): interaction is Command {
+        // @ts-expect-error Typeguard
+        return interaction?.description !== undefined
     }
 }

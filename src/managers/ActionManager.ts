@@ -4,6 +4,9 @@ import { readdir, readdirSync } from "node:fs";
 import CacheManager from './CacheManager';
 import type Client from '../structures/Client';
 import Redis from "ioredis";
+import type Event from "../structures/Event";
+import Command from "../structures/Command";
+import Interaction from "../structures/Interaction";
 
 class ActionManager {
     async initCommands(client: Client): Promise<void> {
@@ -14,7 +17,7 @@ class ActionManager {
 			commands.forEach(async (f) => {
                 //@ts-expect-error Globals are Not Recommended, but needed in this case
 				const Command = require(resolve(join(global.__basedir, 'src/interactions', dir, f))).default;
-				const command = new Command(client)
+				const command: Command = new Command(client)
 				if(command) {
 					client.commands.set(command.name, command);
 				}
@@ -35,8 +38,8 @@ class ActionManager {
 					evt,
 				));
 
-				const event = new Event(client);
-				const eventName = evt.split('.')[0];
+				const event: Event = new Event(client);
+				const eventName = event.name;
 
 				client.on(
 					eventName,
@@ -52,6 +55,27 @@ class ActionManager {
 
 	initRedis(): Redis.Redis  {
 		return new Redis(process.env.DATABASE_URL)
+	}
+
+	initInteractions(client: Client): void {
+		//@ts-expect-error Globals are Not Recommended, but needed in this case
+		readdir(join(global.__basedir, 'src/buttons'), (err, files) => {
+			if (err) client.logger.error(err);
+
+			files.forEach(itr => {
+				const Interaction = require(join(
+                    //@ts-expect-error Globals are Not Recommended, but needed in this case
+					global.__basedir,
+					'src/buttons/',
+					itr,
+				));
+
+				const interaction: Interaction = new Interaction(client);
+				const interactionCustomId = interaction.name;
+
+				client.commands.set(interactionCustomId, interaction)
+			});
+		});
 	}
 }
 

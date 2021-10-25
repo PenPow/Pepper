@@ -1,20 +1,11 @@
 import { ApplicationCommandOptionType } from 'discord-api-types';
-import { CommandInteraction } from 'discord.js';
+import { CommandInteraction, MessageActionRow, MessageButton } from 'discord.js';
 import Client from "../../structures/Client";
 import isValidDomain from 'is-valid-domain';
 import Command from "../../structures/Command";
-import { ErrorType, PunishmentColor } from '../../types/ClientTypes';
-import fetch from 'node-fetch';
+import { digType, ErrorType, PunishmentColor } from '../../types/ClientTypes';
 import Embed from '../../structures/Embed';
-
-const DNS_ERROR: Record<number, string> = {
-    0: 'Unknown Error',
-    1: 'Format Error',
-    2: 'An unexpected server failure occurred when looking up the domain',
-    3: 'A non-existent domain was requested and could not be found',
-    4: 'A request was made that is not implemented  by the resolver',
-    5: 'The query was refused by the DNS resolver',
-};
+import { DNS_ERROR } from '../../utils/BotUtils';
 
 export default class DigCommand extends Command {
     constructor(client: Client) {
@@ -29,36 +20,34 @@ export default class DigCommand extends Command {
         await interaction.deferReply({ ephemeral: true })
 
         const domain = interaction.options.getString('domain', true);
-        let type = interaction.options.getString('type', false);
+        let type = interaction.options.getString('type', false) as digType;
 
         if(type === null) type = 'A';
 
-        if(!isValidDomain(domain.trim().toLowerCase().replace(/^[a-z][a-z0-9+.-]+:\/\/(.+)$/i, '$1'), { subdomain: true, topLevel: true})) return this.sendErrorMessage(interaction, { errorType: ErrorType.INVALID_ARGUMENT, errorMessage: 'A domain name could not be parsed' })
+        if(!isValidDomain(domain.trim().toLowerCase().replace(/^[a-z][a-z0-9+.-]+:\/\/(.+)$/i, '$1'), { subdomain: true, topLevel: true})) return this.sendErrorMessage(interaction, { errorType: ErrorType.INVALID_ARGUMENT, errorMessage: DNS_ERROR[6] })
 
-        const query = new URL('https://cloudflare-dns.com/dns-query');
-        query.searchParams.set('name', domain);
-        query.searchParams.set('type', type.toLowerCase());
-
-        const res = await fetch(query.href, {
-            headers: {
-                Accept: 'application/dns-json',
-            },
-        });
-
-        const { Status, Question, Answer } = await res.json();
+        const { Status, Question, Answer } = await this.client.utils.handleDig(domain, type);
 
         if(Status !== 0) return this.sendErrorMessage(interaction, { errorType: ErrorType.EXTERNAL_ERROR, errorMessage: DNS_ERROR[Status] ?? 'An Unknown Error Occurred!' })
         else {
             const embed = new Embed(interaction)
-                .setColor(PunishmentColor.PUNISHMENT_REMOVE)
+                .setColor(PunishmentColor.SOFTBAN)
                 .setTitle('Dig Complete')
                 .setDescription(`\`query=${Question[0].name} type=${type}\``)
             
             for(const row of Answer || ['']) {
                 Answer !== undefined ? embed.addField(`\`${row.name}\``, `**Data**: ${row.data}\n**TTL**: ${row.TTL}`, true) : embed.addField(`\`${domain}\``, `**No Results Found**`, true)
             }
+
+            const row = new MessageActionRow()
+                                .addComponents(
+                                    new MessageButton()
+                                            .setCustomId('refresh-dig')
+                                            .setLabel('Refresh')
+                                            .setStyle('PRIMARY')
+                                )
             
-            return void this.reply(interaction, { embeds: [embed], ephemeral: true })
+            return void this.reply(interaction, { embeds: [embed], ephemeral: true, components: [row] })
         }
     }
 

@@ -91,10 +91,10 @@ class Command extends Base {
         return true;
     }
 
-    protected async sendErrorMessage(interaction: CommandInteraction, options: ErrorSettings): Promise<void> {
+    public async sendErrorMessage(interaction: CommandInteraction, options: ErrorSettings): Promise<void> {
         const embed = new Embed(interaction)
             .setTitle(`:warning: An Error Occurred!`)
-            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.COMMAND_FAILURE || options.errorType == ErrorType.DATABASE_ERROR || options.errorType == ErrorType.EXTERNAL_ERROR ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them a screenshot of this embed so we can look into it*`)
+            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.COMMAND_FAILURE || options.errorType == ErrorType.DATABASE_ERROR  ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them a screenshot of this embed so we can look into it*`)
             .setColor(PunishmentColor.BAN)
             
         if(options.errorMessage) embed.addField('Message', `\`\`\`diff\n- ${options.errorType}\n+ ${options.errorMessage}\`\`\``);

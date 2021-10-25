@@ -1,7 +1,7 @@
-import { MessageEmbed, CommandInteraction, GuildMember } from 'discord.js';
+import { MessageEmbed, CommandInteraction, GuildMember, ButtonInteraction } from 'discord.js';
 
 class Embed extends MessageEmbed {
-	constructor(interaction: CommandInteraction, data = {}) {
+	constructor(interaction: CommandInteraction | ButtonInteraction, data = {}) {
 		super(data);
 
 		this.setTimestamp()

@@ -24,8 +24,10 @@ export default class DeployCommand extends Command {
             const array: unknown[] = [];
 
             this.client.commands.forEach(async (command) => {
-                const json = await command.generateSlashCommand()
-                array.push(json);
+                if(this.client.isCommandInteraction(command)) {
+                    const json = await command.generateSlashCommand()
+                    array.push(json);
+                }
             })
 
             try {

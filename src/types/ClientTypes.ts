@@ -83,3 +83,5 @@ export interface CommandConstructor {
     extendedDescription?: string,
     guildOnly?: boolean
 }
+
+export type digType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SRV' | 'TXT' | 'PTR' | 'SOA'
