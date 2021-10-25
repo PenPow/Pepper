@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Guild } from "discord.js";
 import Client from "../structures/Client";
-import { GuildSettings } from '../types/ClientTypes';
+import { digType, GuildSettings } from '../types/ClientTypes';
 import fetch from "node-fetch";
 
 export async function guildSettingsManager(guild: Guild): Promise<GuildSettings> {
@@ -16,7 +16,7 @@ export function manageMaliciousURL(client: Client, raw: any): void {
     }
 }
 
-export async function handleDig(domain: string, type: 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SRV' | 'TXT' | 'PTR' | 'SOA') {
+export async function handleDig(domain: string, type: digType) {
     const query = new URL('https://cloudflare-dns.com/dns-query');
     query.searchParams.set('name', domain);
     query.searchParams.set('type', type.toLowerCase());
