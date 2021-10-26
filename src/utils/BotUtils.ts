@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import { Guild } from "discord.js";
 import Client from "../structures/Client";
-import { digType, GuildSettings } from '../types/ClientTypes';
+import { digType, ErrorLog, ErrorType, GuildSettings } from '../types/ClientTypes';
 import fetch from "node-fetch";
+import { stripIndents } from "common-tags";
+import * as packageJSON from '../../package.json'
 
 export async function guildSettingsManager(guild: Guild): Promise<GuildSettings> {
     const object = await JSON.parse(await (guild.client as Client).db.get(`${guild.id}-settings`))
@@ -39,3 +41,60 @@ export const DNS_ERROR: Record<number, string> = {
     5: 'The query was refused by the DNS resolver',
     6: 'A domain name could not be parsed'
 };
+
+export async function generateErrorLog(options: ErrorLog): Promise<string | null> {
+    const str = stripIndents`
+    # PEPPER ERROR LOG
+        This log file contains the information needed for support to diagnose and escalate issues internally. Should you contact support after receiving this message, please provide them with this file,
+        and any other relevant information so we can support you.
+    
+    ## ENVIRONMENT INFORMATION
+
+        ### PACKAGES
+            - DiscordJS Version ▸ ${packageJSON.dependencies["discord.js"]}
+            - DAPI Types Version ▸ ${packageJSON.dependencies["discord-api-types"]}
+            - Node-Fetch Version ▸ ${packageJSON.dependencies["node-fetch"]}
+    
+        ### NODE ENVIRONMENT
+            - VERSION ▸ ${process.version}
+            - ARCHITECTURE ▸ ${process.arch}
+            - PID ▸ ${process.pid}
+            - PLATFORM ▸ ${process.platform}
+            - DOCKER ▸ ${options.client.utils.isDocker()}
+    
+        ### CLIENT INFORMATION
+            - READY AT ▸ ${options.client.readyAt.toUTCString()} (UTC)
+            - UPTIME ▸ ${options.client.uptime.toString()}
+    
+        ### COMMAND INFORMATION
+            - NAME ▸ ${options.command.name}
+            - CLIENT PERMISSIONS ▸ ${options.command.clientPermissions}
+            - USER PERMISSIONS ▸ ${options.command.userPermissions}
+            - TYPE ▸ \`${options.command.type}\`
+            - SATISFIES PERMISSIONS CHECK ▸ ${await options.command.checkPermissions(options.interaction)}
+
+        ### INTERACTION INFORMATION
+            - APPLICATION ID ▸ ${options.interaction.applicationId}
+            - DEFERRED ▸ ${options.interaction.deferred}
+            - EPHEMERAL ▸ ${options.interaction.ephemeral || false}
+            - TYPE ▸ \`${options.interaction.type.toString()}\`
+    
+        ### ERROR INFORMATION
+            - MESSAGE/STACK ▸ ${options.options.errorMessage}
+            - ERROR TYPE ▸ \`${options.options.errorType.toString()}\`
+            - INTERNAL ISSUE ▸ ${options.options.errorType == ErrorType.COMMAND_FAILURE || options.options.errorType == ErrorType.DATABASE_ERROR  ? true : false}
+    
+    ## NOTES
+        This report was automatically generated at ${new Date().toLocaleString()} by Pepper.
+    `.trim();
+
+    const res = await fetch('https://hastebin.com/documents', {
+				method: 'POST',
+				body: str,
+				headers: { 'Content-Type': 'text/plain' },
+	});
+
+    const json = await res.json();
+
+    return json.key ? 'https://hastebin.com/' + json.key + '.md' : null;
+}

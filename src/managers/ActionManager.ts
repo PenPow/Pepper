@@ -11,12 +11,12 @@ import Interaction from "../structures/Interaction";
 class ActionManager {
     async initCommands(client: Client): Promise<void> {
         //@ts-expect-error Globals are Not Recommended, but needed in this case
-        readdirSync(join(global.__basedir, 'src/interactions')).filter(f => !f.endsWith('.js')).forEach(async (dir) => {
+        readdirSync(join(global.__basedir, 'src/applications')).filter(f => !f.endsWith('.js')).forEach(async (dir) => {
             //@ts-expect-error Globals are Not Recommended, but needed in this case
-			const commands = readdirSync(resolve(join(global.__basedir, 'src/interactions'), dir)).filter(f => f.endsWith('js'))
+			const commands = readdirSync(resolve(join(global.__basedir, 'src/applications'), dir)).filter(f => f.endsWith('js'))
 			commands.forEach(async (f) => {
                 //@ts-expect-error Globals are Not Recommended, but needed in this case
-				const Command = require(resolve(join(global.__basedir, 'src/interactions', dir, f))).default;
+				const Command = require(resolve(join(global.__basedir, 'src/applications', dir, f))).default;
 				const command: Command = new Command(client)
 				if(command) {
 					client.commands.set(command.name, command);
@@ -59,14 +59,14 @@ class ActionManager {
 
 	initInteractions(client: Client): void {
 		//@ts-expect-error Globals are Not Recommended, but needed in this case
-		readdir(join(global.__basedir, 'src/buttons'), (err, files) => {
+		readdir(join(global.__basedir, 'src/interactions'), (err, files) => {
 			if (err) client.logger.error(err);
 
 			files.forEach(itr => {
 				const Interaction = require(join(
                     //@ts-expect-error Globals are Not Recommended, but needed in this case
 					global.__basedir,
-					'src/buttons/',
+					'src/interactions/',
 					itr,
 				));
 

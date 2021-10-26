@@ -2,7 +2,7 @@ import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
 import { CommandType, ResponseOptions, ErrorSettings, ErrorType, PunishmentColor, CommandConstructor } from '../types/ClientTypes';
-import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Message, Permissions, PermissionString } from "discord.js";
+import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Message, MessageActionRow, MessageButton, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
 import Embed from "./Embed";
 
@@ -91,15 +91,25 @@ class Command extends Base {
         return true;
     }
 
-    public async sendErrorMessage(interaction: CommandInteraction, options: ErrorSettings): Promise<void> {
+    protected async sendErrorMessage(interaction: CommandInteraction, options: ErrorSettings): Promise<void> {
         const embed = new Embed(interaction)
             .setTitle(`:warning: An Error Occurred!`)
-            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.COMMAND_FAILURE || options.errorType == ErrorType.DATABASE_ERROR  ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them a screenshot of this embed so we can look into it*`)
+            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.COMMAND_FAILURE || options.errorType == ErrorType.DATABASE_ERROR  ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them the attached log file!*`)
             .setColor(PunishmentColor.BAN)
             
         if(options.errorMessage) embed.addField('Message', `\`\`\`diff\n- ${options.errorType}\n+ ${options.errorMessage}\`\`\``);
 
-        await this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: true})
+        const log = await this.client.utils.generateErrorLog({ interaction: interaction, client: this.client, command: this, options: options});
+
+        const row = new MessageActionRow()
+                            .addComponents(
+                                new MessageButton()
+                                        .setLabel('Error Log')
+                                        .setStyle('LINK')
+                                        .setURL(log)
+                            )
+
+        await this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: true, components: [row] })
     }
 
     private async checkUserPermissions(interaction: CommandInteraction): Promise<boolean> {

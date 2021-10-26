@@ -3,5 +3,6 @@
     "cSpell.words": [
         "SOFTBAN",
         "UNBAN"
-    ]
+    ],
+    "bloop.openOnSuggestionsAvailable": false
 }

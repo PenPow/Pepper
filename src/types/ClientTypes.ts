@@ -1,4 +1,6 @@
-import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString } from 'discord.js';
+import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString, CommandInteraction } from 'discord.js';
+import Client from '../structures/Client';
+import Command from '../structures/Command';
 
 export enum CommandType {
     ADMIN,
@@ -85,3 +87,10 @@ export interface CommandConstructor {
 }
 
 export type digType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SRV' | 'TXT' | 'PTR' | 'SOA'
+
+export interface ErrorLog { 
+    interaction: CommandInteraction, 
+    client: Client, 
+    command: Command, 
+    options: ErrorSettings
+}
