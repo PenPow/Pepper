@@ -28,7 +28,7 @@ export default class DigCommand extends Command {
 
         const { Status, Question, Answer } = await this.client.utils.handleDig(domain, type);
 
-        if(Status !== 0) return this.sendErrorMessage(interaction, { errorType: ErrorType.EXTERNAL_ERROR, errorMessage: DNS_ERROR[Status] ?? 'An Unknown Error Occurred!' })
+        if(Status !== 0) return this.sendErrorMessage(interaction, { errorType: ErrorType.COMMAND_FAILURE, errorMessage: DNS_ERROR[Status] ?? 'An Unknown Error Occurred!' })
         else {
             const embed = new Embed(interaction)
                 .setColor(PunishmentColor.SOFTBAN)
