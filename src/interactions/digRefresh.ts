@@ -1,6 +1,6 @@
 import Interaction from "../structures/Interaction";
 import Client from "../structures/Client";
-import { ButtonInteraction, MessageActionRow, MessageButton } from "discord.js";
+import { AutocompleteInteraction, ButtonInteraction, MessageActionRow, MessageButton } from "discord.js";
 import Embed from "../structures/Embed";
 import { digType, PunishmentColor } from "../types/ClientTypes";
 
@@ -9,7 +9,8 @@ class digRefresh extends Interaction {
 		super(client, 'refresh-dig');
 	}
 
-	async run(interaction: ButtonInteraction): Promise<void> {
+	async run(interaction: ButtonInteraction | AutocompleteInteraction): Promise<void> {
+        if(!interaction.isButton()) return;
 		await interaction.deferUpdate();
 
         const domain = interaction.message.embeds[0].description.split('=')[1].split(' ')[0].replace('`', '');

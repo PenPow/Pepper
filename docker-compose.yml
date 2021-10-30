@@ -3,8 +3,9 @@ services:
   pepper:
     container_name: pepper
     restart: always
-    network_mode: bridge
     build: .
+    links:
+      - 'redis:redis'
   redis:
     image: "redis:alpine"
     ports:

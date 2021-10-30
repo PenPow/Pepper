@@ -8,7 +8,6 @@ export enum CommandType {
     FUN,
     MISC,
     MOD,
-    TAGS
 }
 
 export enum ErrorType {
@@ -91,6 +90,6 @@ export type digType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SRV' | 'TXT' | 'PT
 export interface ErrorLog { 
     interaction: CommandInteraction, 
     client: Client, 
-    command: Command, 
+    command: Command,
     options: ErrorSettings
 }

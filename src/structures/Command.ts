@@ -2,7 +2,7 @@ import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
 import { CommandType, ResponseOptions, ErrorSettings, ErrorType, PunishmentColor, CommandConstructor } from '../types/ClientTypes';
-import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Message, MessageActionRow, MessageButton, Permissions, PermissionString } from "discord.js";
+import { BitFieldResolvable, CommandInteraction, GuildChannel, GuildMember, Message, MessageActionRow, MessageButton, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
 import Embed from "./Embed";
 
@@ -28,7 +28,7 @@ class Command extends Base {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public run(interaction: CommandInteraction, args: Collection<string, CommandInteractionOption>): void | Promise<void> {
+    public run(interaction: CommandInteraction): void | Promise<void> {
         throw new Error(`${this.name} has no run function`);
     }
 

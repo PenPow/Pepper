@@ -88,7 +88,7 @@ export async function generateErrorLog(options: ErrorLog): Promise<string | null
         This report was automatically generated at ${new Date().toLocaleString()} by Pepper.
     `.trim();
 
-    const res = await fetch('https://hastebin.com/documents', {
+    const res = await fetch('https://www.toptal.com/developers/hastebin/documents', {
 				method: 'POST',
 				body: str,
 				headers: { 'Content-Type': 'text/plain' },
