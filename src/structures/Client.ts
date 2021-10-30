@@ -20,7 +20,7 @@ export default class Client extends DiscordClient {
     constructor(options: ClientOptions) {
         super(options);
 
-        this.logger = new Logger({ name: "signal" });
+        this.logger = new Logger({ name: "pepper" });
 
         this.types = CommandType;
 
