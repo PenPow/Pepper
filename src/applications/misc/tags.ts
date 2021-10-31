@@ -1,6 +1,6 @@
 import Embed from '../../structures/Embed'
 import { ApplicationCommandOptionType } from 'discord-api-types';
-import { CommandInteraction, Permissions } from 'discord.js';
+import { CommandInteraction, MessageActionRow, MessageSelectMenu, MessageSelectOptionData, Permissions } from 'discord.js';
 import Client from "../../structures/Client";
 import Command from "../../structures/Command";
 import { ErrorType, PunishmentColor } from '../../types/ClientTypes';
@@ -35,14 +35,36 @@ export default class TagsCommand extends Command {
 
     async queryTag(interaction: CommandInteraction, name: string): Promise<void> {
         const tag = await this.client.db.get(`tags:${interaction.guildId}:${name}`) ?? 'No Results Found';
+
+        if(tag === 'No Results Found') {
+            const keys = await this.client.db.keys(`tags:${interaction.guildId}:${name}*`);
+			const keyObject: MessageSelectOptionData[] = [];
+
+			for(const key of keys) {
+				keyObject.push({ label: key.split(':')[2], value: key.split(':')[2] })
+			}
+
+            keyObject.length = 25
+            
+            const row = new MessageActionRow()
+                                .addComponents(
+                                    new MessageSelectMenu()
+                                            .setCustomId('no-tag')
+                                            .setPlaceholder('Make a Selection')
+                                            .addOptions(keyObject)
+                                            .setMaxValues(1)
+                                )
+            
+            return void this.reply(interaction, { content: `Could not find a tag with name \`${name}\`. Select a similar result from the list to send it instead.`, components: [row], ephemeral: true })
+        }
         
-        return void this.reply(interaction, { content: tag, ephemeral: tag === 'No Results Found' ? true : false })
+        return void this.reply(interaction, { content: JSON.parse(tag), ephemeral: tag === 'No Results Found' ? true : false })
     }
 
     async createTag(interaction: CommandInteraction, name: string, description: string): Promise<void> {
         const createdTag = await this.client.db.get(`tags:${interaction.guildId}:${name}`);
         if(createdTag) return void this.sendErrorMessage(interaction, { errorMessage: 'Tag Already Exists', errorType: ErrorType.INVALID_ARGUMENT })
-        await this.client.db.set(`tags:${interaction.guildId}:${name}`, description);
+        await this.client.db.set(`tags:${interaction.guildId}:${name}`, JSON.stringify(description));
 
         const embed = new Embed(interaction)
                             .setColor(PunishmentColor.UNBAN)
@@ -55,7 +77,7 @@ export default class TagsCommand extends Command {
     async editTag(interaction: CommandInteraction, name: string, description: string): Promise<void> {
         const createdTag = await this.client.db.get(`tags:${interaction.guildId}:${name}`);
         if(!createdTag) return void this.sendErrorMessage(interaction, { errorMessage: 'No Tag Found', errorType: ErrorType.INVALID_ARGUMENT })
-        await this.client.db.set(`tags:${interaction.guildId}:${name}`, description);
+        await this.client.db.set(`tags:${interaction.guildId}:${name}`, JSON.stringify(description));
 
         const embed = new Embed(interaction)
                             .setColor(PunishmentColor.UNBAN)

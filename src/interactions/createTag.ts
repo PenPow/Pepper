@@ -1,16 +1,16 @@
 import Interaction from "../structures/Interaction";
 import Client from "../structures/Client";
-import { AutocompleteInteraction, ButtonInteraction, ContextMenuInteraction } from "discord.js";
+import { ContextMenuInteraction } from "discord.js";
 import { ApplicationCommandType } from "discord-api-types";
 import Embed from "../structures/Embed";
-import { ErrorType, PunishmentColor } from "../types/ClientTypes";
+import { ErrorType, interactionType, PunishmentColor } from "../types/ClientTypes";
 
 class getTags extends Interaction {
 	constructor(client: Client) {
 		super(client, 'Create Tags');
 	}
 
-	async run(interaction: ButtonInteraction | AutocompleteInteraction | ContextMenuInteraction): Promise<void> {
+	async run(interaction: interactionType): Promise<void> {
         if(!interaction.isContextMenu()) return;
         const data = interaction.options.getMessage('message').content.match(/\[(.*?)\]/);
 

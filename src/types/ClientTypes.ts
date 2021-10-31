@@ -1,4 +1,4 @@
-import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString, CommandInteraction } from 'discord.js';
+import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString, CommandInteraction, Interaction, SelectMenuInteraction, ButtonInteraction, AutocompleteInteraction, ContextMenuInteraction } from 'discord.js';
 import Client from '../structures/Client';
 import Command from '../structures/Command';
 
@@ -93,3 +93,5 @@ export interface ErrorLog {
     command: Command,
     options: ErrorSettings
 }
+
+export type interactionType = Interaction | SelectMenuInteraction | CommandInteraction | ButtonInteraction | AutocompleteInteraction | ContextMenuInteraction
