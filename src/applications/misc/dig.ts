@@ -26,17 +26,17 @@ export default class DigCommand extends Command {
 
         if(!isValidDomain(domain.trim().toLowerCase().replace(/^[a-z][a-z0-9+.-]+:\/\/(.+)$/i, '$1'), { subdomain: true, topLevel: true})) return this.sendErrorMessage(interaction, { errorType: ErrorType.INVALID_ARGUMENT, errorMessage: DNS_ERROR[6] })
 
-        const { Status, Question, Answer } = await this.client.utils.handleDig(domain, type);
+        const { status, question, answer } = await this.client.utils.handleDig(domain, type);
 
-        if(Status !== 0) return this.sendErrorMessage(interaction, { errorType: ErrorType.COMMAND_FAILURE, errorMessage: DNS_ERROR[Status] ?? 'An Unknown Error Occurred!' })
+        if(status !== 0) return this.sendErrorMessage(interaction, { errorType: ErrorType.COMMAND_FAILURE, errorMessage: DNS_ERROR[status] ?? 'An Unknown Error Occurred!' })
         else {
             const embed = new Embed(interaction)
                 .setColor(PunishmentColor.SOFTBAN)
                 .setTitle('Dig Complete')
-                .setDescription(`\`query=${Question[0].name} type=${type}\``)
+                .setDescription(`\`query=${question[0].name} type=${type}\``)
             
-            for(const row of Answer || ['']) {
-                Answer !== undefined ? embed.addField(`\`${row.name}\``, `**Data**: ${row.data}\n**TTL**: ${row.TTL}`, true) : embed.addField(`\`${domain}\``, `**No Results Found**`, true)
+            for(const row of answer || ['']) {
+                answer !== undefined ? embed.addField(`\`${row.name}\``, `**Data**: ${row.data}\n**TTL**: ${row.TTL}`, true) : embed.addField(`\`${domain}\``, `**No Results Found**`, true)
             }
 
             const row = new MessageActionRow()
