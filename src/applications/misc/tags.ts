@@ -34,15 +34,15 @@ export default class TagsCommand extends Command {
     }
 
     async queryTag(interaction: CommandInteraction, name: string): Promise<void> {
-        const tag = await this.client.db.get(`tags:${interaction.guildId}:${name}`) ?? JSON.stringify('No Results Found');
+        const tag = await this.client.db.get(`tags:${interaction.guildId}:${name}`) ?? 'No Results Found';
         
-        return void this.reply(interaction, { content: JSON.parse(tag), ephemeral: tag === 'No Results Found' ? true : false })
+        return void this.reply(interaction, { content: tag, ephemeral: tag === 'No Results Found' ? true : false })
     }
 
     async createTag(interaction: CommandInteraction, name: string, description: string): Promise<void> {
         const createdTag = await this.client.db.get(`tags:${interaction.guildId}:${name}`);
         if(createdTag) return void this.sendErrorMessage(interaction, { errorMessage: 'Tag Already Exists', errorType: ErrorType.INVALID_ARGUMENT })
-        await this.client.db.set(`tags:${interaction.guildId}:${name}`, JSON.stringify(description));
+        await this.client.db.set(`tags:${interaction.guildId}:${name}`, description);
 
         const embed = new Embed(interaction)
                             .setColor(PunishmentColor.UNBAN)
@@ -55,7 +55,7 @@ export default class TagsCommand extends Command {
     async editTag(interaction: CommandInteraction, name: string, description: string): Promise<void> {
         const createdTag = await this.client.db.get(`tags:${interaction.guildId}:${name}`);
         if(!createdTag) return void this.sendErrorMessage(interaction, { errorMessage: 'No Tag Found', errorType: ErrorType.INVALID_ARGUMENT })
-        await this.client.db.set(`tags:${interaction.guildId}:${name}`, JSON.stringify(description));
+        await this.client.db.set(`tags:${interaction.guildId}:${name}`, description);
 
         const embed = new Embed(interaction)
                             .setColor(PunishmentColor.UNBAN)
