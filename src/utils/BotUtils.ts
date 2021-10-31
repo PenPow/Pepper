@@ -8,7 +8,7 @@ import * as packageJSON from '../../package.json';
 import { constants, privateDecrypt, publicEncrypt,  } from "node:crypto";
 
 export async function guildSettingsManager(guild: Guild): Promise<GuildSettings> {
-    const object = await JSON.parse(this.client.utils.decrypt(await (guild.client as Client).db.get(`${guild.id}-settings`)))
+    const object = await JSON.parse((guild.client as Client).utils.decrypt(await (guild.client as Client).db.get(`${guild.id}-settings`)))
     return object === null ? { logChannel: undefined } : object;
 }
 
@@ -112,13 +112,17 @@ export function encrypt(data: string): string {
 }
 
 export function decrypt(encryptedData: string): string {
-    const data = privateDecrypt({
-        // @ts-expect-error global
-        key: global.PRIVATE_ENCRYPTION_KEY.toString(),
-        padding: constants.RSA_PKCS1_OAEP_PADDING,
-        oaepHash: "sha256",
-        passphrase: ''
-    }, Buffer.from(encryptedData, 'base64'));
+    try {
+        const data = privateDecrypt({
+            // @ts-expect-error global
+            key: global.PRIVATE_ENCRYPTION_KEY.toString(),
+            padding: constants.RSA_PKCS1_OAEP_PADDING,
+            oaepHash: "sha256",
+            passphrase: ''
+        }, Buffer.from(encryptedData, 'base64'));
 
-    return data.toString();
+        return data.toString();
+    } catch {
+        return null
+    }
 }
