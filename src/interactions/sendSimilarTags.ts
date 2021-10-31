@@ -8,16 +8,16 @@ class getTags extends Interaction {
 	}
 
 	async run(interaction: interactionType): Promise<void> {
-        if(!interaction.isSelectMenu()) return;
+                if(!interaction.isSelectMenu()) return;
 		
-        await interaction.update({ content: 'Suggestion Sent!', components: [] });
-        const option = interaction.values[0];
+                await interaction.update({ content: 'Suggestion Sent!', components: [] });
+                const option = interaction.values[0];
 
-        const tag = await this.client.db.get(`tags:${interaction.guildId}:${option}`);
+                const tag = await this.client.db.get(`tags:${interaction.guildId}:${option}`);
 
-        if(!tag) return;
+                if(!tag) return;
 
-        return void interaction.followUp({ content: `*Tag Suggestion from <@${interaction.user.id}>*\n${this.client.utils.decrypt(tag)}`, ephemeral: false }).catch()
+                return void interaction.followUp({ content: `*Tag Suggestion from <@${interaction.user.id}>*\n${this.client.utils.decrypt(tag)}`, ephemeral: false }).catch()
 	}
 }
 

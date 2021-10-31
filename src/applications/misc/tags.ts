@@ -44,7 +44,8 @@ export default class TagsCommand extends Command {
 				keyObject.push({ label: key.split(':')[2], value: key.split(':')[2] })
 			}
 
-            keyObject.length = 25
+            // eslint-disable-next-line no-self-assign
+            keyObject.length > 25 ? keyObject.length = 25 : keyObject.length = keyObject.length;
             
             const row = new MessageActionRow()
                                 .addComponents(
@@ -54,6 +55,10 @@ export default class TagsCommand extends Command {
                                             .addOptions(keyObject)
                                             .setMaxValues(1)
                                 )
+            
+            if(!keyObject[0]) {
+                return void this.reply(interaction, { content: `Could not find a tag with name \`${name}\``, ephemeral: true })
+            }
             
             return void this.reply(interaction, { content: `Could not find a tag with name \`${name}\`. Select a similar result from the list to send it instead.`, components: [row], ephemeral: true })
         }
