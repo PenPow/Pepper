@@ -17,7 +17,7 @@ class getTags extends Interaction {
 
         if(!tag) return;
 
-        return void interaction.followUp({ content: `*Tag Suggestion from <@${interaction.user.id}>*\n${JSON.parse(tag)}`, ephemeral: false }).catch()
+        return void interaction.followUp({ content: `*Tag Suggestion from <@${interaction.user.id}>*\n${this.client.utils.decrypt(tag)}`, ephemeral: false }).catch()
 	}
 }
 

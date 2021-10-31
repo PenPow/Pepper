@@ -4,10 +4,11 @@ import Client from "../structures/Client";
 import { digType, ErrorLog, ErrorType, GuildSettings } from '../types/ClientTypes';
 import fetch from "node-fetch";
 import { stripIndents } from "common-tags";
-import * as packageJSON from '../../package.json'
+import * as packageJSON from '../../package.json';
+import { constants, privateDecrypt, publicEncrypt,  } from "node:crypto";
 
 export async function guildSettingsManager(guild: Guild): Promise<GuildSettings> {
-    const object = await JSON.parse(await (guild.client as Client).db.get(`${guild.id}-settings`))
+    const object = await JSON.parse(this.client.utils.decrypt(await (guild.client as Client).db.get(`${guild.id}-settings`)))
     return object === null ? { logChannel: undefined } : object;
 }
 
@@ -97,4 +98,27 @@ export async function generateErrorLog(options: ErrorLog): Promise<string | null
     const json = await res.json();
 
     return json.key ? 'https://hastebin.com/' + json.key + '.md' : null;
+}
+
+export function encrypt(data: string): string {
+    const encryptedData = publicEncrypt({
+        // @ts-expect-error global
+        key: global.PUBLIC_ENCRYPTION_KEY.toString(),
+        padding: constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256"
+    }, Buffer.from(data));
+
+    return encryptedData.toString('base64');
+}
+
+export function decrypt(encryptedData: string): string {
+    const data = privateDecrypt({
+        // @ts-expect-error global
+        key: global.PRIVATE_ENCRYPTION_KEY.toString(),
+        padding: constants.RSA_PKCS1_OAEP_PADDING,
+        oaepHash: "sha256",
+        passphrase: ''
+    }, Buffer.from(encryptedData, 'base64'));
+
+    return data.toString();
 }

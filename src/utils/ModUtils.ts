@@ -9,7 +9,7 @@ export async function createCase(options: Punishment): Promise<Message> {
     options.caseNo = await getCaseNumber(guild, guild.client as Client);
     options.reason = `Mod: ${moderator.user.tag} | ${options.reason !== '' ? options.reason : 'No Reason Specified'}`;
 
-    await (guild.client as Client).db.set(`${guild.id}-case`, (options.caseNo + 1).toString());
+    await (guild.client as Client).db.set(`${guild.id}-case`, this.client.utils.encrypt((options.caseNo + 1).toString()));
 
     try {
         switch(action) {
@@ -47,13 +47,13 @@ export async function createCase(options: Punishment): Promise<Message> {
         return e;
     }
 
-    await (guild.client as Client).db.set(`${guild.id}-case-${options.caseNo}`, JSON.stringify(options))
+    await (guild.client as Client).db.set(`${guild.id}-case-${options.caseNo}`, JSON.stringify(this.client.utils.encrypt(options)))
 
     return await generateCaseLog(options)
 }
 
 export async function getCaseNumber(guild: Guild, client: Client): Promise<number> {
-    return isNaN(parseInt(await client.db.get(`${guild.id}-case`))) ? 1 : parseInt(await client.db.get(`${guild.id}-case`));
+    return isNaN(parseInt(this.client.utils.decrypt(await client.db.get(`${guild.id}-case`)))) ? 1 : parseInt(this.client.utils.decrypt(await client.db.get(`${guild.id}-case`)));
 }
 
 export async function generateCaseLog(options: Punishment): Promise<Message> {

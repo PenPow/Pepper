@@ -22,7 +22,7 @@ class getTags extends Interaction {
     async createTag(interaction: ContextMenuInteraction, name: string, description: string): Promise<void> {
         const createdTag = await this.client.db.get(`tags:${interaction.guildId}:${name}`);
         if(createdTag) return void this.sendErrorMessage(interaction, { errorMessage: 'Tag Already Exists', errorType: ErrorType.INVALID_ARGUMENT })
-        await this.client.db.set(`tags:${interaction.guildId}:${name}`, JSON.stringify(description));
+        await this.client.db.set(`tags:${interaction.guildId}:${name}`, this.client.utils.encrypt(description));
 
         const embed = new Embed(interaction)
                             .setColor(PunishmentColor.UNBAN)
