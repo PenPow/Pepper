@@ -52,7 +52,7 @@ class Command extends Base {
             }
         }
         catch(err) {
-            return err.message;
+            return null
         }
     }
 

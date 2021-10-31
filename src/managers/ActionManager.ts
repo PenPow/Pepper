@@ -53,7 +53,8 @@ class ActionManager {
 		return new CacheManager();
 	}
 
-	initRedis(): Redis.Redis  {
+	initRedis(client: Client): Redis.Redis  {
+		this.pubSub(client)
 		return new Redis(process.env.DATABASE_URL)
 	}
 
@@ -76,6 +77,22 @@ class ActionManager {
 				client.commands.set(interactionCustomId, interaction)
 			});
 		});
+	}
+
+	pubSub(client: Client): void {
+		try {
+			const sub = new Redis(process.env.DATABASE_URL)
+			sub.subscribe('__keyevent@0__:expired', () => {
+				sub.on('message', (channel: string, message: string) => {
+					client.emit('KEY_EXPIRE', message);
+				})
+			})
+
+			const pub = new Redis(process.env.DATABASE_URL)
+			pub.send_command('config', ['set', 'notify-keyspace-events', 'Ex'])
+		} catch {
+			throw new Error('Failed to Connect to Redis')
+		}
 	}
 }
 

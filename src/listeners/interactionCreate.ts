@@ -8,7 +8,7 @@ class interactionCreate extends Event {
 		super(client, { name: 'interactionCreate', once: false });
 	}
 
-	async run(args: Array<InteractionStructure>): Promise<void> {
+	async run(args: [InteractionStructure]): Promise<void> {
 		const [interaction] = args;
 	
 		if(!interaction.isCommand()) return void this.parseOtherInteraction(interaction as ButtonInteraction | AutocompleteInteraction | ContextMenuInteraction);
