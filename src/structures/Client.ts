@@ -38,7 +38,6 @@ export default class Client extends DiscordClient {
     async init(): Promise<void> {
         if(this.utils.isDocker()) {
             this.logger.warn('Running on Docker - Waiting to allow Redis to start');
-
             await this.utils.sleep(1000 * 3);
         }
 

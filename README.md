@@ -18,7 +18,7 @@
 
 ## About
 
-Pepper is an open source solution to server management. Built from scratch with code quality in mind, our coal is to cover as many functions as possible, to ensure that your server is at level 100.
+Pepper is an open-source solution to server management. Built from scratch with code quality in mind, our goal is to cover as many functions as possible, to ensure that your server is at level 100.
 
 ## License
 
