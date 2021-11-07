@@ -18,6 +18,8 @@ class getTags extends Interaction {
 				keyObject.push({ name: key.split(':')[2], value: key.split(':')[2] })
 			}
 
+			if(keyObject.length > 25) keyObject.length = 25;
+
 			interaction.respond(keyObject)
 		}
 	}

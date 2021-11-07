@@ -45,7 +45,7 @@ export default class TagsCommand extends Command {
 			}
 
             // eslint-disable-next-line no-self-assign
-            keyObject.length > 25 ? keyObject.length = 25 : keyObject.length = keyObject.length;
+            if(keyObject.length > 25) keyObject.length = 25;
             
             const row = new MessageActionRow()
                                 .addComponents(
