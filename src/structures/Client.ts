@@ -30,7 +30,7 @@ export default class Client extends DiscordClient {
 
         this.actionManager = new ActionManager();
 
-        this.db = this.actionManager.initRedis(this)
+        this.db = this.actionManager.initRedis(this);
 
         this.cache = this.actionManager.initCache();
     }
