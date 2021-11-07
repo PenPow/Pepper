@@ -1,5 +1,5 @@
 # Contributing
-If you want to help and contribute to the discordo.js project, then please read the section below. We use ESLint to help ensure code consistency, so please ensure you have set that up in your IDE prior to beginning work.
+If you want to help and contribute to Pepper, then please read the section below. We use ESLint to help ensure code consistency, so please ensure you have set that up in your IDE prior to beginning work.
 
 ## Setup
 
