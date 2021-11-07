@@ -99,17 +99,7 @@ class Command extends Base {
             
         if(options.errorMessage) embed.addField('Message', `\`\`\`diff\n- ${options.errorType}\n+ ${options.errorMessage}\`\`\``);
 
-        const log = await this.client.utils.generateErrorLog({ interaction: interaction, client: this.client, command: this, options: options});
-
-        const row = new MessageActionRow()
-                            .addComponents(
-                                new MessageButton()
-                                        .setLabel('Error Log')
-                                        .setStyle('LINK')
-                                        .setURL(log)
-                            )
-
-        await this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: true, components: [row] })
+        await this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: true })
     }
 
     private async checkUserPermissions(interaction: CommandInteraction): Promise<boolean> {
