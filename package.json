@@ -6,21 +6,23 @@
   "scripts": {
     "build": "npx tsc",
     "lint": "eslint src --ext ts",
-    "start": "node dist"
+    "start": "node dist",
+    "ci": "npm run build && npm run start"
   },
   "keywords": [],
   "author": "Joshua Clements",
   "license": "ISC",
   "dependencies": {
-    "@discordjs/builders": "^0.6.0",
     "@discordjs/rest": "^0.1.0-canary.0",
     "@typescript-eslint/eslint-plugin": "^4.30.0",
     "@typescript-eslint/parser": "^4.30.0",
     "common-tags": "^1.8.0",
-    "discord.js": "^13.1.0",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.3.0",
     "dotenv": "^10.0.0",
     "ioredis": "^4.27.9",
-    "node-fetch": "^2.6.2",
+    "is-valid-domain": "^0.1.2",
+    "node-fetch": "^2.6.5",
     "tslog": "^3.2.2"
   },
   "devDependencies": {

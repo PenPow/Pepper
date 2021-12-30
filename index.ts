@@ -43,7 +43,7 @@ intents.add(
 
 const client = new Client({
 	intents: intents,
-	allowedMentions: { parse: ['users', 'everyone', 'roles'], repliedUser: false },
+	allowedMentions: { repliedUser: false },
 	failIfNotExists: true,
 	presence: {
 		status: 'online',

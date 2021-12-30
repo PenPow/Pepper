@@ -2,7 +2,7 @@ import SignalEmbed from "./Embed";
 import Client from './Client';
 import permissions from "../utils/permissions.json";
 import { CommandType, ResponseOptions, ErrorSettings, ErrorType, PunishmentColor, CommandConstructor } from '../types/ClientTypes';
-import { BitFieldResolvable, Collection, CommandInteraction, CommandInteractionOption, GuildChannel, GuildMember, Message, Permissions, PermissionString } from "discord.js";
+import { BitFieldResolvable, CommandInteraction, GuildChannel, GuildMember, Message, MessageActionRow, MessageButton, Permissions, PermissionString } from "discord.js";
 import Base from "./Base";
 import Embed from "./Embed";
 
@@ -28,30 +28,35 @@ class Command extends Base {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    public run(interaction: CommandInteraction, args: Collection<string, CommandInteractionOption>): void | Promise<void> {
+    public run(interaction: CommandInteraction): void | Promise<void> {
         throw new Error(`${this.name} has no run function`);
     }
 
-    protected async reply(interaction: CommandInteraction, options: ResponseOptions): Promise<Message> {
+    protected async reply(interaction: CommandInteraction, options: ResponseOptions): Promise<Message | string> {
         if(!options.ephemeral) options.fetchReply = true;
 
-        if(interaction.deferred || interaction.replied) {
-            if(options.followUp) {
-                delete options.followUp;
-                return await interaction.followUp(options) as Message
-            }
+        try {
+            if(interaction.deferred || interaction.replied) {
+                if(options.followUp) {
+                    delete options.followUp;
+                    return await interaction.followUp(options) as Message
+                }
+                else {
+                    if(options.followUp) delete options.followUp;
+                    return await interaction.editReply(options) as Message
+                }
+        }
             else {
                 if(options.followUp) delete options.followUp;
-                return await interaction.editReply(options) as Message
+                return await interaction.reply(options) as unknown as Message
             }
         }
-        else {
-            if(options.followUp) delete options.followUp;
-            return await interaction.reply(options) as unknown as Message
+        catch(err) {
+            return null
         }
     }
 
-    public generateSlashCommand(): Record<string, unknown> {
+    public async generateSlashCommand(): Promise<Record<string, unknown>> {
         return {
             name: this.name,
             description: this.description,
@@ -75,7 +80,7 @@ class Command extends Base {
         if(missingPermissions.length !== 0) {
             const embed = new SignalEmbed(interaction)
                 .setAuthor(`${this.client.user.tag}`, (interaction.client as Client).user.displayAvatarURL({ dynamic: true }))
-                .setTitle('Missig Bot Permissions')
+                .setTitle('Missing Bot Permissions')
                 .setDescription(`\`\`\`diff\n${missingPermissions.map(p => `- ${p}`).join('\n')}\`\`\``);
 
             this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: false });
@@ -88,13 +93,13 @@ class Command extends Base {
 
     protected async sendErrorMessage(interaction: CommandInteraction, options: ErrorSettings): Promise<void> {
         const embed = new Embed(interaction)
-            .setTitle(`:warning: An Error Occured!`)
-            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.COMMAND_FAILURE || options.errorType == ErrorType.DATABASE_ERROR || options.errorType == ErrorType.EXTERNAL_ERROR ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them a screenshot of this embed so we can look into it*`)
+            .setTitle(`:warning: An Error Occurred!`)
+            .setDescription(`Looks like we have an issue on our hands! ${options.errorType == ErrorType.EXTERNAL_ERROR || options.errorType == ErrorType.DATABASE_ERROR  ? 'This seems to be an issue with Pepper itself, we are actively working on the issue, and it should be resolved shortly.' : 'This seems to be an error with the way the command was used. Check your inputs to make sure they are not invalid!'}\n\n*If you wish to talk to our support team, please send them the attached log file!*`)
             .setColor(PunishmentColor.BAN)
             
         if(options.errorMessage) embed.addField('Message', `\`\`\`diff\n- ${options.errorType}\n+ ${options.errorMessage}\`\`\``);
 
-        await this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: true})
+        await this.reply(interaction, { embeds: [embed], ephemeral: true, followUp: true })
     }
 
     private async checkUserPermissions(interaction: CommandInteraction): Promise<boolean> {

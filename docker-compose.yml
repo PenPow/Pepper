@@ -1,8 +1,17 @@
 version: "3.9"
 services:
   pepper:
+    container_name: pepper
+    restart: always
     build: .
+    links:
+      - 'redis:redis'
+      - 'redis-web:redis-web'
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+  redis-web:
+    image: "redislabs/redisinsight:latest"
+    ports:
+      - '8001:8001'

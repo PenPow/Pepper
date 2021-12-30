@@ -1,4 +1,6 @@
-import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString } from 'discord.js';
+import { Guild, GuildMember, User, Snowflake, InteractionReplyOptions, BitFieldResolvable, PermissionString, CommandInteraction, Interaction, SelectMenuInteraction, ButtonInteraction, AutocompleteInteraction, ContextMenuInteraction } from 'discord.js';
+import Client from '../structures/Client';
+import Command from '../structures/Command';
 
 export enum CommandType {
     ADMIN,
@@ -6,7 +8,6 @@ export enum CommandType {
     FUN,
     MISC,
     MOD,
-    TAGS
 }
 
 export enum ErrorType {
@@ -83,3 +84,14 @@ export interface CommandConstructor {
     extendedDescription?: string,
     guildOnly?: boolean
 }
+
+export type digType = 'A' | 'AAAA' | 'CNAME' | 'MX' | 'NS' | 'SRV' | 'TXT' | 'PTR' | 'SOA'
+
+export interface ErrorLog { 
+    interaction: CommandInteraction, 
+    client: Client, 
+    command: Command,
+    options: ErrorSettings
+}
+
+export type interactionType = Interaction | SelectMenuInteraction | CommandInteraction | ButtonInteraction | AutocompleteInteraction | ContextMenuInteraction
